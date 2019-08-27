@@ -2,13 +2,13 @@
 
 Combining Checkout and Billing is the fastest way to get a subscription payment page up and running on Stripe.
 
-[Checkout](https://stripe.com/docs/payments/checkout) is a pre-built payment page that lets you accept cards and Apple Pay while [Billing](https://stripe.com/docs/payments/checkout) is a suite of APIs that lets you model complex subscription plans. Together they bring you subscription superpowers by letting you creating subscriptions for your products -- in some cases without the need for a server 🥳.
+[Checkout](https://stripe.com/docs/payments/checkout) is a pre-built payment page that lets you accept cards and Apple Pay while [Billing](https://stripe.com/docs/payments/checkout) is a suite of APIs that lets you model complex subscription plans. 
 
-Once your customer is ready to pay, use Stripe.js to redirect them to the URL of your Stripe hosted payment page with the ID of your Billing [Plan](https://stripe.com/docs/api/plans).
+Once your customer is ready to pay, use Stripe.js with the ID of your Billing [Plan](https://stripe.com/docs/api/plans) to redirect them to your Checkout page.
 
 <img src="./checkout-demo.gif" alt="A gif of the Checkout payment page rendering" align="center">
 
-See the sample [live](https://0hczv.sse.codesandbox.io/) or [fork](https://codesandbox.io/s/stripe-sample-checkout-one-time-payments-0hczv) on CodeSandbox.
+See the sample [live](https://4iupj.sse.codesandbox.io/) or [fork](https://codesandbox.io/s/stripe-sample-checkout-single-subscription-4iupj) on CodeSandbox.
 
 **Features:**
 
