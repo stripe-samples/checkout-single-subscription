@@ -29,9 +29,9 @@ def get_example():
     return render_template('index.html')
 
 
-@app.route('/public-key', methods=['GET'])
+@app.route('/setup', methods=['GET'])
 def get_public_key():
-    return jsonify({'publicKey': os.getenv('STRIPE_PUBLIC_KEY')})
+    return jsonify({'publicKey': os.getenv('STRIPE_PUBLIC_KEY'), 'basicPlan': os.getenv('BASIC_PLAN_ID'), 'proPlan': os.getenv('PRO_PLAN_ID')})
 
 # Fetch the Checkout Session to display the JSON result on the success page
 @app.route('/checkout-session', methods=['GET'])
@@ -51,24 +51,16 @@ def create_checkout_session():
         # Other optional params include:
         # [billing_address_collection] - to display billing address details on the page
         # [customer] - if you have an existing Stripe Customer ID
-        # [payment_intent_data] - lets capture the payment later
         # [customer_email] - lets you prefill the email input in the form
         # For full details see https:#stripe.com/docs/api/checkout/sessions/create
-        
+
         # ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
         checkout_session = stripe.checkout.Session.create(
             success_url=domain_url +
             "/success.html?session_id={CHECKOUT_SESSION_ID}",
             cancel_url=domain_url + "/canceled.html",
             payment_method_types=["card"],
-            line_items=[
-                {
-                    "name": "Pasha photo",
-                    "quantity": data['quantity'],
-                    "currency": "usd",
-                    "amount": 500
-                }
-            ]
+            subscription_data={"items": [{"plan": data['planId']}]}
         )
         return jsonify({'sessionId': checkout_session['id']})
     except Exception as e:

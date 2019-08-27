@@ -3,8 +3,8 @@ require 'sinatra'
 require 'dotenv'
 
 # Replace if using a different env file or config
-ENV_FILE_PATH = '/../../../.env'.freeze
-Dotenv.load(File.dirname(__FILE__) + ENV_FILE_PATH)
+ENV_PATH = '/../../../.env'.freeze
+Dotenv.load(File.dirname(__FILE__) + ENV_PATH)
 Stripe.api_key = ENV['STRIPE_SECRET_KEY']
 
 set :static, true
@@ -25,10 +25,12 @@ get '/checkout-session' do
   session.to_json
 end
 
-get '/public-key' do
+get '/setup' do
   content_type 'application/json'
   {
-    publicKey: ENV['STRIPE_PUBLIC_KEY']
+    publicKey: ENV['STRIPE_PUBLIC_KEY'],
+    basicPlan: ENV['BASIC_PLAN_ID'],
+    proPlan: ENV['PRO_PLAN_ID']
   }.to_json
 end
 
@@ -39,7 +41,6 @@ post '/create-checkout-session' do
   # Other optional params include:
   # [billing_address_collection] - to display billing address details on the page
   # [customer] - if you have an existing Stripe Customer ID
-  # [payment_intent_data] - lets capture the payment later
   # [customer_email] - lets you prefill the email input in the form
   # For full details see https:#stripe.com/docs/api/checkout/sessions/create
 
@@ -48,12 +49,7 @@ post '/create-checkout-session' do
     success_url: ENV['DOMAIN'] + '/success.html?session_id={CHECKOUT_SESSION_ID}',
     cancel_url: ENV['DOMAIN'] + '/canceled.html',
     payment_method_types: ['card'],
-    line_items: [{
-      name: 'Pasha photo',
-      quantity: data['quantity'],
-      currency: 'usd',
-      amount: 500
-    }]
+    subscription_data: { items: [{ plan: data['planId'] }] }
   )
 
   {

@@ -34,25 +34,17 @@ app.get("/checkout-session", async (req, res) => {
 
 app.post("/create-checkout-session", async (req, res) => {
   const domainURL = process.env.DOMAIN;
+  const { planId } = req.body;
 
-  const { quantity } = req.body;
   // Create new Checkout Session for the order
   // Other optional params include:
   // [billing_address_collection] - to display billing address details on the page
   // [customer] - if you have an existing Stripe Customer ID
-  // [payment_intent_data] - lets capture the payment later
   // [customer_email] - lets you prefill the email input in the form
   // For full details see https://stripe.com/docs/api/checkout/sessions/create
   session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
-    line_items: [
-      {
-        name: "Pasha photo",
-        quantity: quantity,
-        currency: "usd",
-        amount: 500 // Keep the amount on the server to prevent customers from manipulating on client
-      }
-    ],
+    subscription_data: { items: [{ plan: planId }] },
     // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
     success_url: `${domainURL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${domainURL}/canceled.html`
@@ -63,13 +55,16 @@ app.post("/create-checkout-session", async (req, res) => {
   });
 });
 
-app.get("/public-key", (req, res) => {
-  res.send({ publicKey: process.env.STRIPE_PUBLIC_KEY });
+app.get("/setup", (req, res) => {
+  res.send({
+    publicKey: process.env.STRIPE_PUBLIC_KEY,
+    basicPlan: process.env.BASIC_PLAN_ID,
+    proPlan: process.env.PRO_PLAN_ID
+  });
 });
 
 // Webhook handler for asynchronous events.
 app.post("/webhook", async (req, res) => {
-  let data;
   let eventType;
   // Check if webhook signing is configured.
   if (process.env.STRIPE_WEBHOOK_SECRET) {

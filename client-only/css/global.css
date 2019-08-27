@@ -60,6 +60,9 @@ h4 {
 .sr-header {
   margin-bottom: 32px;
 }
+.sr-container {
+  display: flex;
+}
 .sr-payment-summary {
   margin-bottom: 20px;
 }

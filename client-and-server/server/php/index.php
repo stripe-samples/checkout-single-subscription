@@ -32,9 +32,9 @@ $app->get('/', function (Request $request, Response $response, array $args) {
     return $response->write(file_get_contents(getenv('STATIC_DIR') . '/index.html'));
 });
 
-$app->get('/public-key', function (Request $request, Response $response, array $args) {
+$app->get('/setup', function (Request $request, Response $response, array $args) {
   $pub_key = getenv('STRIPE_PUBLIC_KEY');
-  return $response->withJson([ 'publicKey' => $pub_key ]);
+  return $response->withJson([ 'publicKey' => $pub_key, 'basicPlan' => getenv('BASIC_PLAN_ID'), 'proPlan' => getenv('PRO_PLAN_ID') ]);
 });
 
 // Fetch the Checkout Session to display the JSON result on the success page
@@ -49,7 +49,6 @@ $app->get('/checkout-session', function (Request $request, Response $response, a
 $app->post('/create-checkout-session', function(Request $request, Response $response, array $args) {
   $domain_url = getenv('DOMAIN');
   $body = json_decode($request->getBody());
-  $quantity = $body->quantity;
 
   // Create new Checkout Session for the order
   // Other optional params include:
@@ -64,12 +63,9 @@ $app->post('/create-checkout-session', function(Request $request, Response $resp
     'success_url' => $domain_url . '/success.html?session_id={CHECKOUT_SESSION_ID}',
     'cancel_url' => $domain_url . '/canceled.html',
     'payment_method_types' => ['card'],
-    'line_items' => [[
-      'name' => 'Pasha photo',
-      'amount' => 500,
-      'currency' => 'usd',
-      'quantity' => $quantity
-    ]]
+    'subscription_data' => ['items' => [[
+      'plan' => $body->planId,
+    ]]]
   ]);
 
   return $response->withJson(array('sessionId' => $checkout_session['id']));

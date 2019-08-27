@@ -4,7 +4,7 @@
 
     <!-- project coordinates - values which uniquely identify this project -->
     <groupId>com.stripe.recipe</groupId>
-    <artifactId>single-product-checkout</artifactId>
+    <artifactId>single-subscription-checkout</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
     <!-- library dependencies -->

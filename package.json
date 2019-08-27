@@ -1,13 +1,13 @@
 {
-    "name": "stripe-sample-checkout-one-time-payments",
+    "name": "stripe-sample-checkout-single-subscription",
     "version": "1.0.0",
-    "description": "One-time payments with Checkout",
+    "description": "Subscription page with Checkout",
     "main": "server.js",
     "scripts": {
       "start": "node client-and-server/server/node/server.js",
       "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "author": "stripe-demos",
+    "author": "stripe-samples",
     "license": "ISC",
     "dependencies": {
       "body-parser": "^1.19.0",

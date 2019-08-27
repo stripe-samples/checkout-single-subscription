@@ -19,7 +19,7 @@ import com.stripe.model.checkout.Session;
 import com.stripe.exception.*;
 import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
-import com.stripe.param.checkout.SessionCreateParams.LineItem;
+import com.stripe.param.checkout.SessionCreateParams.SubscriptionData;
 import com.stripe.param.checkout.SessionCreateParams.PaymentMethodType;
 
 import io.github.cdimascio.dotenv.Dotenv;
@@ -28,29 +28,31 @@ public class Server {
     private static Gson gson = new Gson();
 
     static class PostBody {
-        @SerializedName("quantity")
-        Long quantity;
+        @SerializedName("planId")
+        String planId;
 
-        public Long getQuantity() {
-            return quantity;
+        public String getPlanId() {
+            return planId;
         }
     }
 
     public static void main(String[] args) {
         port(4242);
-        String ENV_FILE_PATH = "../../../";
-        Dotenv dotenv = Dotenv.configure().directory(ENV_FILE_PATH).load();
+        String ENV_PATH = "../../../";
+        Dotenv dotenv = Dotenv.configure().directory(ENV_PATH).load();
 
         Stripe.apiKey = dotenv.get("STRIPE_SECRET_KEY");
 
         staticFiles.externalLocation(
                 Paths.get(Paths.get("").toAbsolutePath().toString(), dotenv.get("STATIC_DIR")).normalize().toString());
 
-        get("/public-key", (request, response) -> {
+        get("/setup", (request, response) -> {
             response.type("application/json");
 
             Map<String, Object> responseData = new HashMap<>();
             responseData.put("publicKey", dotenv.get("STRIPE_PUBLIC_KEY"));
+            responseData.put("basicPlan", dotenv.get("BASIC_PLAN_ID"));
+            responseData.put("proPlan", dotenv.get("PRO_PLAN_ID"));
             return gson.toJson(responseData);
         });
 
@@ -85,9 +87,9 @@ public class Server {
                     .setCancelUrl(domainUrl + "/canceled.html").addPaymentMethodType(PaymentMethodType.CARD);
 
             // Add a line item for the sticker the Customer is purchasing
-            LineItem item = new LineItem.Builder().setName("Pasha photo").setAmount(new Long(500))
-                    .setQuantity(postBody.getQuantity()).setCurrency("usd").build();
-            builder.addLineItem(item);
+            SubscriptionData.Item plan = new SubscriptionData.Item.Builder().setPlan(postBody.getPlanId()).build();
+            SubscriptionData subscriptionData = new SubscriptionData.Builder().addItem(plan).build();
+            builder.setSubscriptionData(subscriptionData);
 
             SessionCreateParams createParams = builder.build();
             Session session = Session.create(createParams);
@@ -98,7 +100,6 @@ public class Server {
         });
 
         post("/webhook", (request, response) -> {
-            System.out.println("Webhook");
             String payload = request.body();
             String sigHeader = request.headers("Stripe-Signature");
             String endpointSecret = dotenv.get("STRIPE_WEBHOOK_SECRET");
