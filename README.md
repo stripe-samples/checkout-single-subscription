@@ -1,10 +1,8 @@
 # Using Checkout for subscriptions
 
-Combining Checkout and Billing is the fastest way to get a subscription payment page up and running on Stripe.
+[Checkout](https://stripe.com/docs/payments/checkout) is a pre-built payment page that lets you accept cards and Apple Pay. [Billing](https://stripe.com/docs/billing) is a suite of APIs that lets you model complex subscription plans. You can combine the two products to get a subscription payment page up and running without the need of a server. 
 
-[Checkout](https://stripe.com/docs/payments/checkout) is a pre-built payment page that lets you accept cards and Apple Pay while [Billing](https://stripe.com/docs/payments/checkout) is a suite of APIs that lets you model complex subscription plans. 
-
-Once your customer is ready to pay, use Stripe.js with the ID of your Billing [Plan](https://stripe.com/docs/api/plans) to redirect them to your Checkout page.
+When your customer is ready to pay, use [Stripe.js](https://stripe.com/docs/web) with the ID of your Billing [Plan](https://stripe.com/docs/api/plans) to redirect them to your Checkout page.
 
 <img src="./checkout-demo.gif" alt="A gif of the Checkout payment page rendering" align="center">
 
@@ -19,7 +17,7 @@ See the sample [live](https://4iupj.sse.codesandbox.io/) or [fork](https://codes
 
 For more features see the [Checkout documentation](https://stripe.com/docs/payments/checkout/subscriptions).
 
-There are two integrations: [client-only](./client-only) and [client-and-server](./client-and-server).
+There are two integrations: [client-only](./client-only) and [client-and-server](./client-and-server). The client-and-server integration uses the [Checkout Sessions API](https://stripe.com/docs/api/checkout/sessions) for additional functionality.
 
 <!-- prettier-ignore -->
 |     | client-only | client-and-server
