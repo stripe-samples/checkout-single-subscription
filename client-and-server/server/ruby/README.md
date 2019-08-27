@@ -1,4 +1,4 @@
-# Name of sample
+# Checkout single subscription
 
 A [Sinatra](http://sinatrarb.com/) implementation.
 

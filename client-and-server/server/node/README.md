@@ -1,4 +1,4 @@
-# Name of sample
+# Checkout single subscription
 An [Express server](http://expressjs.com) implementation
 
 ## Requirements
