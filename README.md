@@ -6,7 +6,15 @@ When your customer is ready to pay, use [Stripe.js](https://stripe.com/docs/web)
 
 <img src="./checkout-demo.gif" alt="A gif of the Checkout payment page rendering" align="center">
 
-See the sample [live](https://4iupj.sse.codesandbox.io/) or [fork](https://codesandbox.io/s/stripe-sample-checkout-single-subscription-4iupj) on CodeSandbox.
+**Demo**
+
+See the sample [live](https://4iupj.sse.codesandbox.io/) or [fork](https://codesandbox.io/s/stripe-sample-checkout-single-subscription-4iupj) the Node implementation on CodeSandbox.
+
+The demo is running in test mode -- use `4242424242424242` as a test card number with any CVC + future expiration date.
+
+Use the `4000000000003220` test card number to trigger a 3D Secure challenge flow.
+
+Read more about testing on Stripe at https://stripe.com/docs/testing.
 
 **Features:**
 
