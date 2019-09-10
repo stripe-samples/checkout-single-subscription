@@ -71,8 +71,8 @@
       // Replace with the domain you want your users to be redirected back to after payment
       var DOMAIN = window.location.hostname;
       // Replace with a SKU for your own product (created either in the Stripe Dashboard or with the API)
-      var SUBSCRIPTION_BASIC_PLAN_ID = "plan_FaVNTHoGtE8eEs";
-      var SUBSCRIPTION_PRO_PLAN_ID = "plan_FaVNTHoGtE8eEs";
+      var SUBSCRIPTION_BASIC_PLAN_ID = "plan_1234";
+      var SUBSCRIPTION_PRO_PLAN_ID = "plan_5678";
 
       if (PUBLIC_KEY === "pk_1234") {
         console.log(
@@ -104,7 +104,7 @@
         // with the current quantity
         stripe
           .redirectToCheckout({
-            items: [{ plan: SUBSCRIPTION_BASIC_PLAN_ID }],
+            items: [{ plan: SUBSCRIPTION_BASIC_PLAN_ID, quantity: 1 }],
             successUrl:
               DOMAIN + "/success.html?session_id={CHECKOUT_SESSION_ID}",
             cancelUrl: DOMAIN + "/canceled.html"
