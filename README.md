@@ -67,9 +67,13 @@ STRIPE_PUBLIC_KEY=<replace-with-your-publishable-key>
 STRIPE_SECRET_KEY=<replace-with-your-secret-key>
 ```
 
-`CLIENT_DIR` tells the server where to the client files are located and does not need to be modified unless you move the server files.
+`STATIC_DIR` tells the server where to the client files are located and does not need to be modified unless you move the server files.
+
 `BASIC_PLAN_ID` requires a Plan ID for a "basic" subscription.
+
 `PRO_PLAN_ID` requires a Plan ID for a "pro" subscription.
+
+`DOMAIN` is the domain of your website, where Checkout will redirect back to after the customer completes the payment on the Checkout page. 
 
 **4. Follow the server instructions on how to run:**
 
@@ -83,7 +87,7 @@ npm install
 npm start
 ```
 
-**4. [Optional] Run a webhook locally:**
+**5. [Optional] Run a webhook locally:**
 
 You can use the Stripe CLI to easily spin up a local webhook.
 
