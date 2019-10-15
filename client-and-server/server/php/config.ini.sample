@@ -1,0 +1,6 @@
+stripe_secret_key = sk_test_1234
+stripe_publishable_key = pk_test_1234
+stripe_webhook_secret = whsec_1234
+domain = https://example.com/  
+basic_plan_id = plan_123
+pro_plan_id = plan_456
