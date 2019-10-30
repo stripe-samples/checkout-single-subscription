@@ -38,8 +38,8 @@ public class Server {
 
     public static void main(String[] args) {
         port(4242);
-        String ENV_PATH = "../../../";
-        Dotenv dotenv = Dotenv.configure().directory(ENV_PATH).load();
+        
+        Dotenv dotenv = Dotenv.load();
 
         Stripe.apiKey = dotenv.get("STRIPE_SECRET_KEY");
 
@@ -50,7 +50,7 @@ public class Server {
             response.type("application/json");
 
             Map<String, Object> responseData = new HashMap<>();
-            responseData.put("publicKey", dotenv.get("STRIPE_PUBLIC_KEY"));
+            responseData.put("publicKey", dotenv.get("STRIPE_PUBLISHABLE_KEY"));
             responseData.put("basicPlan", dotenv.get("BASIC_PLAN_ID"));
             responseData.put("proPlan", dotenv.get("PRO_PLAN_ID"));
             return gson.toJson(responseData);
