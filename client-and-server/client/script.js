@@ -21,7 +21,7 @@ var handleResult = function(result) {
   }
 };
 
-/* Get your Stripe public key to initialize Stripe.js */
+/* Get your Stripe publishable key to initialize Stripe.js */
 fetch("/setup")
   .then(function(result) {
     return result.json();

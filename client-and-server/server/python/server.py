@@ -30,8 +30,8 @@ def get_example():
 
 
 @app.route('/setup', methods=['GET'])
-def get_public_key():
-    return jsonify({'publicKey': os.getenv('STRIPE_PUBLIC_KEY'), 'basicPlan': os.getenv('BASIC_PLAN_ID'), 'proPlan': os.getenv('PRO_PLAN_ID')})
+def get_publishable_key():
+    return jsonify({'publicKey': os.getenv('STRIPE_PUBLISHABLE_KEY'), 'basicPlan': os.getenv('BASIC_PLAN_ID'), 'proPlan': os.getenv('PRO_PLAN_ID')})
 
 # Fetch the Checkout Session to display the JSON result on the success page
 @app.route('/checkout-session', methods=['GET'])
