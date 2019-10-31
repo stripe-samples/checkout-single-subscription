@@ -42,19 +42,29 @@ This sample includes 5 server implementations in Node, Ruby, Python, Java, and P
 
 Follow the steps below to run locally.
 
-**1. Clone the repository:**
+**1. Clone and configure the sample**
+
+The Stripe CLI is the fastest way to clone and configure a sample to run locally. 
+
+**Using the Stripe CLI**
+
+If you haven't already installed the CLI, follow the [installation steps](https://github.com/stripe/stripe-cli#installation) in the project README. The CLI is useful for cloning samples and locally testing webhooks and Stripe integrations.
+
+In your terminal shell, run the Stripe CLI command to clone the sample:
+
+```
+stripe samples create checkout-single-subscription
+```
+
+The CLI will walk you through picking your integration type, server and client languages, and configuring your .env config file with your Stripe API keys. 
+
+**Installing and cloning manually**
+
+If you do not want to use the Stripe CLI, you can manually clone and configure the sample yourself:
 
 ```
 git clone https://github.com/stripe-samples/checkout-single-subscription
 ```
-
-**2. Create Products and Plans on Stripe** 
-
-This sample requires two [Plan](https://stripe.com/docs/api/plans/object) IDs to create the Checkout page. Products and Plans are objects on Stripe that lets you model a subscription. 
-
-You can create Products and Plans [in the dashboard](https://dashboard.stripe.com/products) or via [the API](https://stripe.com/docs/api/plans/create). Create two Plans to run this sample. 
-
-**3. Copy the .env.example to a .env file:**
 
 Copy the .env.example file into a file named .env in the folder of the server you want to use. For example:
 
@@ -62,12 +72,13 @@ Copy the .env.example file into a file named .env in the folder of the server yo
 cp .env.example client-and-server/server/node/.env
 ```
 
-You will need a Stripe account in order to run the demo. Once you set up your account, go to the Stripe [developer dashboard](https://stripe.com/docs/development#api-keys) to find your API keys and update your .env file with the keys.
+You will need a Stripe account in order to run the demo. Once you set up your account, go to the Stripe [developer dashboard](https://stripe.com/docs/development#api-keys) to find your API keys.
 
 ```
 STRIPE_PUBLISHABLE_KEY=<replace-with-your-publishable-key>
 STRIPE_SECRET_KEY=<replace-with-your-secret-key>
 ```
+
 The other environment variables are configurable:
 
 `STATIC_DIR` tells the server where to the client files are located and does not need to be modified unless you move the server files.
@@ -78,7 +89,13 @@ The other environment variables are configurable:
 
 `DOMAIN` is the domain of your website, where Checkout will redirect back to after the customer completes the payment on the Checkout page. 
 
-**4. Follow the server instructions on how to run:**
+**2. Create Products and Plans on Stripe** 
+
+This sample requires two [Plan](https://stripe.com/docs/api/plans/object) IDs to create the Checkout page. Products and Plans are objects on Stripe that lets you model a subscription. 
+
+You can create Products and Plans [in the dashboard](https://dashboard.stripe.com/products) or via [the API](https://stripe.com/docs/api/plans/create). Create two Plans to run this sample. 
+
+**3. Follow the server instructions on how to run:**
 
 Pick the server language you want and follow the instructions in the server folder README on how to run.
 
@@ -90,7 +107,7 @@ npm install
 npm start
 ```
 
-**5. [Optional] Run a webhook locally:**
+**4. [Optional] Run a webhook locally:**
 
 You can use the Stripe CLI to easily spin up a local webhook.
 
