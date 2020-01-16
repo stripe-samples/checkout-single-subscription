@@ -8,7 +8,7 @@ When your customer is ready to pay, use [Stripe.js](https://stripe.com/docs/web)
 
 **Demo**
 
-See the sample [live](https://4iupj.sse.codesandbox.io/) or [fork](https://codesandbox.io/s/stripe-sample-checkout-single-subscription-4iupj) the Node implementation on CodeSandbox.
+See the sample of the `client-and-server/` integration [live](https://4iupj.sse.codesandbox.io/) or [fork](https://codesandbox.io/s/stripe-sample-checkout-single-subscription-4iupj) the Node implementation on CodeSandbox.
 
 The demo is running in test mode -- use `4242424242424242` as a test card number with any CVC + future expiration date.
 

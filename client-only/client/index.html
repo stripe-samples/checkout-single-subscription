@@ -106,8 +106,10 @@
           .redirectToCheckout({
             items: [{ plan: planId, quantity: 1 }],
             successUrl:
-              DOMAIN + "/success.html?session_id={CHECKOUT_SESSION_ID}",
-            cancelUrl: DOMAIN + "/canceled.html"
+              "https://" +
+              DOMAIN +
+              "/success.html?session_id={CHECKOUT_SESSION_ID}",
+            cancelUrl: "https://" + DOMAIN + "/canceled.html"
           })
           .then(handleResult);
       };
