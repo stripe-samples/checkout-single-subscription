@@ -41,7 +41,7 @@ app.post("/create-checkout-session", async (req, res) => {
   // [customer] - if you have an existing Stripe Customer ID
   // [customer_email] - lets you prefill the email input in the form
   // For full details see https://stripe.com/docs/api/checkout/sessions/create
-  session = await stripe.checkout.sessions.create({
+  const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     subscription_data: { items: [{ plan: planId }] },
     // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
