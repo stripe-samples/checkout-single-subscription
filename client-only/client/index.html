@@ -69,10 +69,10 @@
       // Replace with your own publishable key: https://dashboard.stripe.com/test/apikeys
       var PUBLISHABLE_KEY = "pk_1234";
       // Replace with the domain you want your users to be redirected back to after payment
-      var DOMAIN = window.location.hostname;
+      var DOMAIN = window.location.origin;
       // Replace with a SKU for your own product (created either in the Stripe Dashboard or with the API)
-      var SUBSCRIPTION_BASIC_PLAN_ID = "plan_1234";
-      var SUBSCRIPTION_PRO_PLAN_ID = "plan_5678";
+      var SUBSCRIPTION_BASIC_PRICE_ID = "price_1234";
+      var SUBSCRIPTION_PRO_PRICE_ID = "price_5678";
 
       if (PUBLISHABLE_KEY === "pk_1234") {
         console.log(
@@ -81,8 +81,8 @@
       }
 
       if (
-        SUBSCRIPTION_BASIC_PLAN_ID === "plan_1234" ||
-        SUBSCRIPTION_PRO_PLAN_ID === "plan_5678"
+        SUBSCRIPTION_BASIC_PRICE_ID === "price_1234" ||
+        SUBSCRIPTION_PRO_PRICE_ID === "price_5678"
       ) {
         console.log(
           "Replace the hardcoded plan ID with your own plan: https://stripe.com/docs/api/plans"
@@ -92,38 +92,36 @@
       var stripe = Stripe(PUBLISHABLE_KEY);
 
       // Handle any errors from Checkout
-      var handleResult = function(result) {
+      var handleResult = function (result) {
         if (result.error) {
           var displayError = document.getElementById("error-message");
           displayError.textContent = result.error.message;
         }
       };
 
-      var redirectToCheckout = function(planId) {
+      var redirectToCheckout = function (priceId) {
         // Make the call to Stripe.js to redirect to the checkout page
         // with the current quantity
         stripe
           .redirectToCheckout({
-            items: [{ plan: planId, quantity: 1 }],
+            lineItems: [{ price: priceId, quantity: 1 }],
             successUrl:
-              "https://" +
-              DOMAIN +
-              "/success.html?session_id={CHECKOUT_SESSION_ID}",
-            cancelUrl: "https://" + DOMAIN + "/canceled.html"
+              DOMAIN + "/success.html?session_id={CHECKOUT_SESSION_ID}",
+            cancelUrl: DOMAIN + "/canceled.html",
           })
           .then(handleResult);
       };
 
       document
         .getElementById("basic-btn")
-        .addEventListener("click", function(evt) {
-          redirectToCheckout(SUBSCRIPTION_BASIC_PLAN_ID);
+        .addEventListener("click", function (evt) {
+          redirectToCheckout(SUBSCRIPTION_BASIC_PRICE_ID);
         });
 
       document
         .getElementById("pro-btn")
-        .addEventListener("click", function(evt) {
-          redirectToCheckout(SUBSCRIPTION_PRO_PLAN_ID);
+        .addEventListener("click", function (evt) {
+          redirectToCheckout(SUBSCRIPTION_PRO_PRICE_ID);
         });
     </script>
   </body>

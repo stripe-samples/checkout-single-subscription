@@ -16,9 +16,11 @@ $checkout_session = \Stripe\Checkout\Session::create([
 	'success_url' => $domain_url . '/success.html?session_id={CHECKOUT_SESSION_ID}',
 	'cancel_url' => $domain_url . '/canceled.html',
 	'payment_method_types' => ['card'],
-	'subscription_data' => ['items' => [[
-		'plan' => $body->planId,
-	]]]
+	'mode' => 'subscription',
+	'line_items' => [[
+	  'price' => $body->priceId,
+	  'quantity' => 1,
+	]]
 ]);
   
 echo json_encode(['sessionId' => $checkout_session['id']]);

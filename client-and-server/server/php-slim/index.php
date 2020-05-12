@@ -34,7 +34,7 @@ $app->get('/', function (Request $request, Response $response, array $args) {
 
 $app->get('/setup', function (Request $request, Response $response, array $args) {
   $pub_key = getenv('STRIPE_PUBLISHABLE_KEY');
-  return $response->withJson([ 'publicKey' => $pub_key, 'basicPlan' => getenv('BASIC_PLAN_ID'), 'proPlan' => getenv('PRO_PLAN_ID') ]);
+  return $response->withJson([ 'publishableKey' => $pub_key, 'basicPrice' => getenv('BASIC_PRICE_ID'), 'proPrice' => getenv('PRO_PRICE_ID') ]);
 });
 
 // Fetch the Checkout Session to display the JSON result on the success page
@@ -63,9 +63,11 @@ $app->post('/create-checkout-session', function(Request $request, Response $resp
     'success_url' => $domain_url . '/success.html?session_id={CHECKOUT_SESSION_ID}',
     'cancel_url' => $domain_url . '/canceled.html',
     'payment_method_types' => ['card'],
-    'subscription_data' => ['items' => [[
-      'plan' => $body->planId,
-    ]]]
+    'mode' => 'subscription',
+    'line_items' => [[
+      'price' => $body->priceId,
+      'quantity' => 1,
+    ]]
   ]);
 
   return $response->withJson(array('sessionId' => $checkout_session['id']));

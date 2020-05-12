@@ -1,12 +1,12 @@
 // Create a Checkout Session with the selected plan ID
-var createCheckoutSession = function(planId) {
+var createCheckoutSession = function(priceId) {
   return fetch("/create-checkout-session", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      planId: planId
+      priceId: priceId
     })
   }).then(function(result) {
     return result.json();
@@ -27,16 +27,16 @@ fetch("/setup")
     return result.json();
   })
   .then(function(json) {
-    var publicKey = json.publicKey;
-    var basicPlanId = json.basicPlan;
-    var proPlanId = json.proPlan;
+    var publishableKey = json.publishableKey;
+    var basicPriceId = json.basicPrice;
+    var proPriceId = json.proPrice;
 
-    var stripe = Stripe(publicKey);
+    var stripe = Stripe(publishableKey);
     // Setup event handler to create a Checkout Session when button is clicked
     document
       .getElementById("basic-plan-btn")
       .addEventListener("click", function(evt) {
-        createCheckoutSession(basicPlanId).then(function(data) {
+        createCheckoutSession(basicPriceId).then(function(data) {
           // Call Stripe.js method to redirect to the new Checkout page
           stripe
             .redirectToCheckout({
@@ -50,7 +50,7 @@ fetch("/setup")
     document
       .getElementById("pro-plan-btn")
       .addEventListener("click", function(evt) {
-        createCheckoutSession(proPlanId).then(function(data) {
+        createCheckoutSession(proPriceId).then(function(data) {
           // Call Stripe.js method to redirect to the new Checkout page
           stripe
             .redirectToCheckout({

@@ -11,11 +11,11 @@ app.use(
   express.json({
     // We need the raw body to verify webhook signatures.
     // Let's compute it only when hitting the Stripe webhook endpoint.
-    verify: function(req, res, buf) {
+    verify: function (req, res, buf) {
       if (req.originalUrl.startsWith("/webhook")) {
         req.rawBody = buf.toString();
       }
-    }
+    },
   })
 );
 
@@ -33,7 +33,7 @@ app.get("/checkout-session", async (req, res) => {
 
 app.post("/create-checkout-session", async (req, res) => {
   const domainURL = process.env.DOMAIN;
-  const { planId } = req.body;
+  const { priceId } = req.body;
 
   // Create new Checkout Session for the order
   // Other optional params include:
@@ -42,23 +42,29 @@ app.post("/create-checkout-session", async (req, res) => {
   // [customer_email] - lets you prefill the email input in the form
   // For full details see https://stripe.com/docs/api/checkout/sessions/create
   session = await stripe.checkout.sessions.create({
+    mode: "subscription",
     payment_method_types: ["card"],
-    subscription_data: { items: [{ plan: planId }] },
+    line_items: [
+      {
+        price: priceId,
+        quantity: 1,
+      },
+    ],
     // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
     success_url: `${domainURL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${domainURL}/canceled.html`
+    cancel_url: `${domainURL}/canceled.html`,
   });
 
   res.send({
-    sessionId: session.id
+    sessionId: session.id,
   });
 });
 
 app.get("/setup", (req, res) => {
   res.send({
-    publicKey: process.env.STRIPE_PUBLISHABLE_KEY,
-    basicPlan: process.env.BASIC_PLAN_ID,
-    proPlan: process.env.PRO_PLAN_ID
+    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+    basicPrice: process.env.BASIC_PRICE_ID,
+    proPrice: process.env.PRO_PRICE_ID,
   });
 });
 
