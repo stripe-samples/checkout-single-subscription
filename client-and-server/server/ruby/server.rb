@@ -28,9 +28,9 @@ end
 get '/setup' do
   content_type 'application/json'
   {
-    publicKey: ENV['STRIPE_PUBLISHABLE_KEY'],
-    basicPlan: ENV['BASIC_PLAN_ID'],
-    proPlan: ENV['PRO_PLAN_ID']
+    publishableKey: ENV['STRIPE_PUBLISHABLE_KEY'],
+    basicPrice: ENV['BASIC_PRICE_ID'],
+    proPrice: ENV['PRO_PRICE_ID']
   }.to_json
 end
 
@@ -49,7 +49,11 @@ post '/create-checkout-session' do
     success_url: ENV['DOMAIN'] + '/success.html?session_id={CHECKOUT_SESSION_ID}',
     cancel_url: ENV['DOMAIN'] + '/canceled.html',
     payment_method_types: ['card'],
-    subscription_data: { items: [{ plan: data['planId'] }] }
+    mode: 'subscription',
+    line_items: [{
+      quantity: 1,
+      price: data['priceId'],
+    }]
   )
 
   {

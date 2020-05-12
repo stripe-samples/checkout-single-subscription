@@ -7,10 +7,12 @@ node_modules/
 
 # Ruby files
 Gemfile.lock
+.bundle
 
 # Python files
 __pycache__
 venv
+env
 
 # PHP files
 vendor

@@ -19,7 +19,7 @@ import com.stripe.model.checkout.Session;
 import com.stripe.exception.*;
 import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
-import com.stripe.param.checkout.SessionCreateParams.SubscriptionData;
+import com.stripe.param.checkout.SessionCreateParams.LineItem;
 import com.stripe.param.checkout.SessionCreateParams.PaymentMethodType;
 
 import io.github.cdimascio.dotenv.Dotenv;
@@ -28,17 +28,17 @@ public class Server {
     private static Gson gson = new Gson();
 
     static class PostBody {
-        @SerializedName("planId")
-        String planId;
+        @SerializedName("priceId")
+        String priceId;
 
-        public String getPlanId() {
-            return planId;
+        public String getPriceId() {
+            return priceId;
         }
     }
 
     public static void main(String[] args) {
         port(4242);
-        
+
         Dotenv dotenv = Dotenv.load();
 
         Stripe.apiKey = dotenv.get("STRIPE_SECRET_KEY");
@@ -50,9 +50,9 @@ public class Server {
             response.type("application/json");
 
             Map<String, Object> responseData = new HashMap<>();
-            responseData.put("publicKey", dotenv.get("STRIPE_PUBLISHABLE_KEY"));
-            responseData.put("basicPlan", dotenv.get("BASIC_PLAN_ID"));
-            responseData.put("proPlan", dotenv.get("PRO_PLAN_ID"));
+            responseData.put("publishableKey", dotenv.get("STRIPE_PUBLISHABLE_KEY"));
+            responseData.put("basicPrice", dotenv.get("BASIC_PRICE_ID"));
+            responseData.put("proPrice", dotenv.get("PRO_PRICE_ID"));
             return gson.toJson(responseData);
         });
 
@@ -84,12 +84,11 @@ public class Server {
             // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID
             // set as a query param
             builder.setSuccessUrl(domainUrl + "/success.html?session_id={CHECKOUT_SESSION_ID}")
-                    .setCancelUrl(domainUrl + "/canceled.html").addPaymentMethodType(PaymentMethodType.CARD);
+                    .setCancelUrl(domainUrl + "/canceled.html").addPaymentMethodType(PaymentMethodType.CARD)
+                    .setMode(SessionCreateParams.Mode.SUBSCRIPTION);
 
-            // Add a line item for the sticker the Customer is purchasing
-            SubscriptionData.Item plan = new SubscriptionData.Item.Builder().setPlan(postBody.getPlanId()).build();
-            SubscriptionData subscriptionData = new SubscriptionData.Builder().addItem(plan).build();
-            builder.setSubscriptionData(subscriptionData);
+            LineItem item = new LineItem.Builder().setQuantity(new Long(1)).setPrice(postBody.getPriceId()).build();
+            builder.addLineItem(item);
 
             SessionCreateParams createParams = builder.build();
             Session session = Session.create(createParams);
@@ -115,13 +114,13 @@ public class Server {
             }
 
             switch (event.getType()) {
-            case "checkout.session.completed":
-                System.out.println("Payment succeeded!");
-                response.status(200);
-                return "";
-            default:
-                response.status(200);
-                return "";
+                case "checkout.session.completed":
+                    System.out.println("Payment succeeded!");
+                    response.status(200);
+                    return "";
+                default:
+                    response.status(200);
+                    return "";
             }
         });
     }

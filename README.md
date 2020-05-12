@@ -2,7 +2,7 @@
 
 [Checkout](https://stripe.com/docs/payments/checkout) is a pre-built payment page that lets you accept cards and Apple Pay. [Billing](https://stripe.com/docs/billing) is a suite of APIs that lets you model complex subscription plans. You can combine the two products to get a subscription payment page up and running without the need of a server. 
 
-When your customer is ready to pay, use [Stripe.js](https://stripe.com/docs/web) with the ID of your Billing [Plan](https://stripe.com/docs/api/plans) to redirect them to your Checkout page.
+When your customer is ready to pay, use [Stripe.js](https://stripe.com/docs/js) with the ID of your [Price](https://stripe.com/docs/api/prices) to redirect them to your Checkout page.
 
 <img src="./checkout-demo.gif" alt="A gif of the Checkout payment page rendering" align="center">
 
@@ -31,7 +31,7 @@ There are two integrations: [client-only](./client-only) and [client-and-server]
 |     | client-only | client-and-server
 :--- | :---: | :---:
 🔨 **Prebuilt checkout page.** Create a payment page that is customizable with your business' name and logo. | ✅  | ✅ |
-🖥️ **Define plans in Dashboard or via API.** Create a plan with either the Stripe Dashboard or API. | ✅  | ✅ |
+🖥️ **Define prices in Dashboard or via API.** Create a price with either the Stripe Dashboard or API. | ✅  | ✅ |
 🔢 **Start subscription for an existing Customer.** Use [Customers](https://stripe.com/docs/api/customers) to keep track of additional customer data.  | ❌  | ✅ |
 
 ## How to run locally
@@ -88,17 +88,17 @@ The other environment variables are configurable:
 
 `STATIC_DIR` tells the server where to the client files are located and does not need to be modified unless you move the server files.
 
-`BASIC_PLAN_ID` requires a Plan ID for a "basic" subscription.
+`BASIC_PRICE_ID` requires a Price ID for a "basic" subscription.
 
-`PRO_PLAN_ID` requires a Plan ID for a "pro" subscription.
+`PRO_PRICE_ID` requires a Price ID for a "pro" subscription.
 
 `DOMAIN` is the domain of your website, where Checkout will redirect back to after the customer completes the payment on the Checkout page. 
 
-**2. Create Products and Plans on Stripe** 
+**2. Create Products and Prices on Stripe** 
 
-This sample requires two [Plan](https://stripe.com/docs/api/plans/object) IDs to create the Checkout page. Products and Plans are objects on Stripe that lets you model a subscription. 
+This sample requires two [Price](https://stripe.com/docs/api/prices/object) IDs to create the Checkout page. Products and Prices are objects on Stripe that let you model a subscription. 
 
-You can create Products and Plans [in the dashboard](https://dashboard.stripe.com/products) or via [the API](https://stripe.com/docs/api/plans/create). Create two Plans to run this sample. 
+You can create Products and Prices [in the dashboard](https://dashboard.stripe.com/products) or via [the API](https://stripe.com/docs/api/prices/create). Create two recurring Prices to run this sample. 
 
 **3. Follow the server instructions on how to run:**
 
@@ -138,6 +138,10 @@ A: We chose the most minimal framework to convey the key Stripe calls and concep
 Q: Can you show me how to build X?
 
 A: We are always looking for new sample ideas, please email dev-samples@stripe.com with your suggestion!
+
+Q: What happened to Plans and SKUs?
+
+A: Plans and SKUs were old ways to model recurring and one-off prices. We created the Prices API to unify the two concepts and make it easier to reason about your pricing catalog. You can still pass old Plan and SKU IDs to Checkout -- to learn more read [our docs](https://stripe.com/docs/payments/checkout/migrating-prices) but know that you do not need to migrate any of your existing SKUs and Plans.
 
 ## Author(s)
 

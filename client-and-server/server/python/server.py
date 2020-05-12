@@ -31,7 +31,7 @@ def get_example():
 
 @app.route('/setup', methods=['GET'])
 def get_publishable_key():
-    return jsonify({'publicKey': os.getenv('STRIPE_PUBLISHABLE_KEY'), 'basicPlan': os.getenv('BASIC_PLAN_ID'), 'proPlan': os.getenv('PRO_PLAN_ID')})
+    return jsonify({'publishableKey': os.getenv('STRIPE_PUBLISHABLE_KEY'), 'basicPrice': os.getenv('BASIC_PRICE_ID'), 'proPrice': os.getenv('PRO_PRICE_ID')})
 
 # Fetch the Checkout Session to display the JSON result on the success page
 @app.route('/checkout-session', methods=['GET'])
@@ -60,7 +60,13 @@ def create_checkout_session():
             "/success.html?session_id={CHECKOUT_SESSION_ID}",
             cancel_url=domain_url + "/canceled.html",
             payment_method_types=["card"],
-            subscription_data={"items": [{"plan": data['planId']}]}
+            mode="subscription",
+            line_items=[
+                {
+                    "price": data['priceId'],
+                    "quantity": 1
+                }
+            ]
         )
         return jsonify({'sessionId': checkout_session['id']})
     except Exception as e:
