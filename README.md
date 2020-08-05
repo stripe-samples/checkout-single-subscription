@@ -1,6 +1,6 @@
 # Using Checkout for subscriptions
 
-[Checkout](https://stripe.com/docs/payments/checkout) is a pre-built payment page that lets you accept cards and Apple Pay. [Billing](https://stripe.com/docs/billing) is a suite of APIs that lets you model complex subscription plans. You can combine the two products to get a subscription payment page up and running without the need of a server. 
+[Checkout](https://stripe.com/docs/payments/checkout) is a pre-built payment page that lets you accept cards and Apple Pay. [Billing](https://stripe.com/docs/billing) is a suite of APIs that lets you model complex subscription plans. You can combine the two products to get a subscription payment page up and running without the need of a server.
 
 When your customer is ready to pay, use [Stripe.js](https://stripe.com/docs/js) with the ID of your [Price](https://stripe.com/docs/api/prices) to redirect them to your Checkout page.
 
@@ -8,7 +8,7 @@ When your customer is ready to pay, use [Stripe.js](https://stripe.com/docs/js) 
 
 **Demo**
 
-See the sample of the `client-and-server/` integration [live](https://4iupj.sse.codesandbox.io/) or [fork](https://codesandbox.io/s/stripe-sample-checkout-single-subscription-4iupj) the Node implementation on CodeSandbox.
+See the sample of the `client-and-server/` integration [live](https://u5n7k.sse.codesandbox.io/) or [fork](https://codesandbox.io/s/github/stripe-samples/checkout-single-subscription/tree/codesandbox) the Node implementation on CodeSandbox.
 
 The demo is running in test mode -- use `4242424242424242` as a test card number with any CVC + future expiration date.
 
@@ -36,7 +36,7 @@ There are two integrations: [client-only](./client-only) and [client-and-server]
 
 ## How to run locally
 
-There are two integrations: `client-only` and `client-and-server`. The following are instructions on how to run the `client-and-server` integration: 
+There are two integrations: `client-only` and `client-and-server`. The following are instructions on how to run the `client-and-server` integration:
 
 This sample includes 5 server implementations in Node, Ruby, Python, Java, and PHP.
 
@@ -46,10 +46,9 @@ Follow the steps below to run locally.
 
 If you plan on using the client-only integration, go to your [account settings](https://dashboard.stripe.com/account/checkout/settings) in the Dashboard and enable Checkout.
 
-
 **1. Clone and configure the sample**
 
-The Stripe CLI is the fastest way to clone and configure a sample to run locally. 
+The Stripe CLI is the fastest way to clone and configure a sample to run locally.
 
 **Using the Stripe CLI**
 
@@ -61,7 +60,7 @@ In your terminal shell, run the Stripe CLI command to clone the sample:
 stripe samples create checkout-single-subscription
 ```
 
-The CLI will walk you through picking your integration type, server and client languages, and configuring your .env config file with your Stripe API keys. 
+The CLI will walk you through picking your integration type, server and client languages, and configuring your .env config file with your Stripe API keys.
 
 **Installing and cloning manually**
 
@@ -92,13 +91,13 @@ The other environment variables are configurable:
 
 `PRO_PRICE_ID` requires a Price ID for a "pro" subscription.
 
-`DOMAIN` is the domain of your website, where Checkout will redirect back to after the customer completes the payment on the Checkout page. 
+`DOMAIN` is the domain of your website, where Checkout will redirect back to after the customer completes the payment on the Checkout page.
 
-**2. Create Products and Prices on Stripe** 
+**2. Create Products and Prices on Stripe**
 
-This sample requires two [Price](https://stripe.com/docs/api/prices/object) IDs to create the Checkout page. Products and Prices are objects on Stripe that let you model a subscription. 
+This sample requires two [Price](https://stripe.com/docs/api/prices/object) IDs to create the Checkout page. Products and Prices are objects on Stripe that let you model a subscription.
 
-You can create Products and Prices [in the dashboard](https://dashboard.stripe.com/products) or via [the API](https://stripe.com/docs/api/prices/create). Create two recurring Prices to run this sample. 
+You can create Products and Prices [in the dashboard](https://dashboard.stripe.com/products) or via [the API](https://stripe.com/docs/api/prices/create). Create two recurring Prices to run this sample.
 
 **3. Follow the server instructions on how to run:**
 
@@ -126,8 +125,7 @@ The CLI will print a webhook secret key to the console. Set `STRIPE_WEBHOOK_SECR
 
 You should see events logged in the console where the CLI is running.
 
-When you are ready to create a live webhook endpoint, follow our guide in the docs on [configuring a webhook endpoint in the dashboard](https://stripe.com/docs/webhooks/setup#configure-webhook-settings). 
-
+When you are ready to create a live webhook endpoint, follow our guide in the docs on [configuring a webhook endpoint in the dashboard](https://stripe.com/docs/webhooks/setup#configure-webhook-settings).
 
 ## FAQ
 
