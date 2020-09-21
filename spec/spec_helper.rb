@@ -106,6 +106,7 @@ end
 SERVER_URL = "http://localhost:4242"
 
 def get(path, *args, **kwargs)
+  puts "Getting #{path}"
   RestClient.get("#{SERVER_URL}#{path}", *args, **kwargs)
 end
 

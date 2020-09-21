@@ -2,6 +2,11 @@
 .DS_Store
 .vscode
 
+# Dotnet files
+**/Debug/**
+**/project-cache/**
+**/.vs/**
+**/obj/**
 
 # Node files
 node_modules/
