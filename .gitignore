@@ -2,12 +2,14 @@
 .DS_Store
 .vscode
 
+
 # Node files
 node_modules/
 
 # Ruby files
 Gemfile.lock
 .bundle
+.byebug_history
 
 # Python files
 __pycache__

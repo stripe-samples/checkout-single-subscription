@@ -1,6 +1,7 @@
 require 'stripe'
 require 'sinatra'
 require 'dotenv'
+require 'byebug'
 
 # Copy the .env.example in the root into a .env file in this folder
 
@@ -36,7 +37,7 @@ end
 
 post '/create-checkout-session' do
   content_type 'application/json'
-  data = JSON.parse request.body.read
+  data = JSON.parse(request.body.read)
   # Create new Checkout Session for the order
   # Other optional params include:
   # [billing_address_collection] - to display billing address details on the page
@@ -45,19 +46,25 @@ post '/create-checkout-session' do
   # For full details see https:#stripe.com/docs/api/checkout/sessions/create
 
   # ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
-  session = Stripe::Checkout::Session.create(
-    success_url: ENV['DOMAIN'] + '/success.html?session_id={CHECKOUT_SESSION_ID}',
-    cancel_url: ENV['DOMAIN'] + '/canceled.html',
-    payment_method_types: ['card'],
-    mode: 'subscription',
-    line_items: [{
-      quantity: 1,
-      price: data['priceId'],
-    }]
-  )
+  begin
+    session = Stripe::Checkout::Session.create(
+      success_url: ENV['DOMAIN'] + '/success.html?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url: ENV['DOMAIN'] + '/canceled.html',
+      payment_method_types: ['card'],
+      mode: 'subscription',
+      line_items: [{
+        quantity: 1,
+        price: data['priceId'],
+      }]
+    )
+  rescue => e
+    halt 400,
+        { 'Content-Type' => 'application/json' },
+        { 'error': { message: e.error.message } }.to_json
+  end
 
   {
-    sessionId: session['id']
+    sessionId: session.id
   }.to_json
 end
 
