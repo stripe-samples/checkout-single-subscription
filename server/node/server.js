@@ -54,6 +54,7 @@ app.post("/create-checkout-session", async (req, res) => {
       // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
       success_url: `${domainURL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${domainURL}/canceled.html`,
+      customer: process.env.CUSTOMER,
     });
 
     res.send({
@@ -75,6 +76,14 @@ app.get("/setup", (req, res) => {
     basicPrice: process.env.BASIC_PRICE_ID,
     proPrice: process.env.PRO_PRICE_ID,
   });
+});
+
+app.post('/customer-portal', async (req, res) => {
+  const session = await stripe.billingPortal.sessions.create({
+    customer: process.env.CUSTOMER,
+    return_url: process.env.DOMAIN,
+  });
+  res.redirect(301, session.url);
 });
 
 // Webhook handler for asynchronous events.

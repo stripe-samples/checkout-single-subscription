@@ -1,7 +1,7 @@
 stripe_secret_key = sk_test_1234
 stripe_publishable_key = pk_test_1234
 stripe_webhook_secret = whsec_1234
-domain = https://example.com/  
+domain = https://example.com/
 basic_price_id = price_123
 pro_price_id = price_456
-
+customer = cus_123abc

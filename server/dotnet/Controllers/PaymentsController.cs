@@ -52,6 +52,7 @@ namespace server.Controllers
                         Quantity = 1,
                     },
                 },
+                Customer = this.options.Value.Customer,
             };
             var service = new SessionService(this.client);
             try
@@ -81,6 +82,21 @@ namespace server.Controllers
             var service = new SessionService(this.client);
             var session = await service.GetAsync(sessionId);
             return Ok(session);
+        }
+
+        [HttpPost("customer-portal")]
+        public async Task<IActionResult> CustomerPortal()
+        {
+            var options = new Stripe.BillingPortal.SessionCreateOptions
+            {
+                // This ID is typically stored with the authenticated
+                // user in your database.
+                Customer = this.options.Value.Customer,
+                ReturnUrl = this.options.Value.Domain,
+            };
+            var service = new Stripe.BillingPortal.SessionService(this.client);
+            var session = await service.CreateAsync(options);
+            return Redirect(session.Url);
         }
 
         [HttpPost("webhook")]

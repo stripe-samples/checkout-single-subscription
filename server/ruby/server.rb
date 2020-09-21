@@ -55,7 +55,13 @@ post '/create-checkout-session' do
       line_items: [{
         quantity: 1,
         price: data['priceId'],
-      }]
+      }],
+
+      # This is the ID of the Stripe Customer object.  Typically you'll create
+      # the Stripe Customer when a new user registers for your application and
+      # you'll store their ID in your database. Here you can pass that ID along
+      # to associate checkout sessions with a given customer.
+      customer: ENV['CUSTOMER'],
     )
   rescue => e
     halt 400,
@@ -66,6 +72,14 @@ post '/create-checkout-session' do
   {
     sessionId: session.id
   }.to_json
+end
+
+post '/customer-portal' do
+  session = Stripe::BillingPortal::Session.create({
+    customer: ENV['CUSTOMER'],
+    return_url: ENV['DOMAIN'],
+  })
+  redirect session.url, 302
 end
 
 post '/webhook' do

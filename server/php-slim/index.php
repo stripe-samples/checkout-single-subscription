@@ -71,7 +71,8 @@ $app->post('/create-checkout-session', function(Request $request, Response $resp
       'line_items' => [[
         'price' => $body->priceId,
         'quantity' => 1,
-      ]]
+      ]],
+      'customer' => getenv('CUSTOMER'),
     ]);
   } catch (Exception $e) {
     return $response->withJson([
@@ -82,6 +83,14 @@ $app->post('/create-checkout-session', function(Request $request, Response $resp
   }
 
   return $response->withJson(array('sessionId' => $checkout_session['id']));
+});
+
+$app->post('/customer-portal', function(Request $request, Response $response) {
+  $session = \Stripe\BillingPortal\Session::create([
+    'customer' => getenv('CUSTOMER'),
+    'return_url' => getenv('DOMAIN'),
+  ]);
+  return $response->withRedirect($session->url);
 });
 
 $app->post('/webhook', function(Request $request, Response $response) {

@@ -29,5 +29,10 @@ RSpec.describe 'server APIs' do
     expect(status).to eq(200)
     expect(resp2).to have_key('id')
     expect(resp2['id']).to eq(resp['sessionId'])
+
+    # Create customer portal session
+    loc, status = post_json('/customer-portal', {})
+    expect(status).to eq(302)
+    expect(loc).to_not be_nil
   end
 end

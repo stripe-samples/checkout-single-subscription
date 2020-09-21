@@ -12,6 +12,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/stripe/stripe-go/v71"
 	"github.com/stripe/stripe-go/v71/checkout/session"
+	portalsession "github.com/stripe/stripe-go/v71/billingportal/session"
 	"github.com/stripe/stripe-go/v71/webhook"
 )
 
@@ -26,6 +27,7 @@ func main() {
 	http.HandleFunc("/setup", handleSetup)
 	http.HandleFunc("/create-checkout-session", handleCreateCheckoutSession)
 	http.HandleFunc("/checkout-session", handleCheckoutSession)
+	http.HandleFunc("/customer-portal", handleCustomerPortal)
 	http.HandleFunc("/webhook", handleWebhook)
 	addr := "localhost:4242"
 	log.Printf("Listening on %s ...", addr)
@@ -76,7 +78,13 @@ func handleCreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
         Quantity: stripe.Int64(1),
       },
     },
+
+    // This is the ID of the Stripe Customer.  Typically you'll create the
+    // customer object When the user signs up for your service and you can pull
+    // this out of the database with the authenticated user.
+    Customer: stripe.String(os.Getenv("CUSTOMER")),
   }
+
   s, err := session.New(params)
   if err != nil {
     w.WriteHeader(http.StatusBadRequest)
@@ -103,6 +111,20 @@ func handleCheckoutSession(w http.ResponseWriter, r *http.Request) {
   sessionID := r.URL.Query().Get("sessionId")
   s, _ := session.Get(sessionID, nil)
   writeJSON(w, s)
+}
+
+func handleCustomerPortal(w http.ResponseWriter, r *http.Request) {
+  if r.Method != "POST" {
+    http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+    return
+  }
+  params := &stripe.BillingPortalSessionParams{
+    Customer: stripe.String(os.Getenv("CUSTOMER")),
+    ReturnURL: stripe.String(os.Getenv("DOMAIN")),
+  }
+  s, _ := portalsession.New(params)
+
+  http.Redirect(w, r, s.URL, 302)
 }
 
 func handleWebhook(w http.ResponseWriter, r *http.Request) {

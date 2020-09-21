@@ -10,7 +10,7 @@ import stripe
 import json
 import os
 
-from flask import Flask, render_template, jsonify, request, send_from_directory
+from flask import Flask, render_template, jsonify, request, send_from_directory, redirect
 from dotenv import load_dotenv, find_dotenv
 
 # Setup Stripe python client library
@@ -71,11 +71,20 @@ def create_checkout_session():
                     "price": data['priceId'],
                     "quantity": 1
                 }
-            ]
+            ],
+            customer=os.getenv("CUSTOMER"),
         )
         return jsonify({'sessionId': checkout_session['id']})
     except Exception as e:
         return jsonify({'error': {'message': str(e)}}), 400
+
+
+@app.route('/customer-portal', methods=['POST'])
+def customer_portal():
+    session = stripe.billing_portal.Session.create(
+        customer=os.getenv("CUSTOMER"),
+        return_url=os.getenv("DOMAIN"))
+    return redirect(session.url, 302)
 
 
 @app.route('/webhook', methods=['POST'])
