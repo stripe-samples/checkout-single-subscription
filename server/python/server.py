@@ -31,7 +31,12 @@ def get_example():
 
 @app.route('/setup', methods=['GET'])
 def get_publishable_key():
-    return jsonify({'publishableKey': os.getenv('STRIPE_PUBLISHABLE_KEY'), 'basicPrice': os.getenv('BASIC_PRICE_ID'), 'proPrice': os.getenv('PRO_PRICE_ID')})
+    return jsonify({
+        'publishableKey': os.getenv('STRIPE_PUBLISHABLE_KEY'),
+        'basicPrice': os.getenv('BASIC_PRICE_ID'),
+        'proPrice': os.getenv('PRO_PRICE_ID')
+    })
+
 
 # Fetch the Checkout Session to display the JSON result on the success page
 @app.route('/checkout-session', methods=['GET'])
@@ -70,7 +75,7 @@ def create_checkout_session():
         )
         return jsonify({'sessionId': checkout_session['id']})
     except Exception as e:
-        return jsonify(error=str(e)), 403
+        return jsonify({'error': {'message': str(e)}}), 400
 
 
 @app.route('/webhook', methods=['POST'])

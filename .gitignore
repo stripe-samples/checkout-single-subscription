@@ -2,12 +2,19 @@
 .DS_Store
 .vscode
 
+# Dotnet files
+**/Debug/**
+**/project-cache/**
+**/.vs/**
+**/obj/**
+
 # Node files
 node_modules/
 
 # Ruby files
 Gemfile.lock
 .bundle
+.byebug_history
 
 # Python files
 __pycache__
