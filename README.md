@@ -8,43 +8,36 @@ When your customer is ready to pay, use [Stripe.js](https://stripe.com/docs/js) 
 
 **Demo**
 
-See the sample of the `client-and-server/` integration [live](https://u5n7k.sse.codesandbox.io/) or [fork](https://codesandbox.io/s/github/stripe-samples/checkout-single-subscription/tree/codesandbox) the Node implementation on CodeSandbox.
+See the sample of the integration [live](https://u5n7k.sse.codesandbox.io/) or [fork](https://codesandbox.io/s/github/stripe-samples/checkout-single-subscription/tree/codesandbox) the Node implementation on CodeSandbox.
 
 The demo is running in test mode -- use `4242424242424242` as a test card number with any CVC + future expiration date.
 
-Use the `4000000000003220` test card number to trigger a 3D Secure challenge flow.
+Use the `4000002500003155` test card number to trigger a 3D Secure challenge flow.
 
 Read more about testing on Stripe at https://stripe.com/docs/testing.
 
 **Features:**
 
-- Localization in 14 different languages 🌍
+- Localization in over 25 different languages 🌍
 - Built-in Apple Pay support 🍎
 - Built-in dynamic 3D Secure (ready for SCA) 🔔
-- Plans to support more payment methods 🔮
 
 For more features see the [Checkout documentation](https://stripe.com/docs/payments/checkout/subscriptions).
 
-There are two integrations: [client-only](./client-only) and [client-and-server](./client-and-server). The client-and-server integration uses the [Checkout Sessions API](https://stripe.com/docs/api/checkout/sessions) for additional functionality.
+The integration uses the [Checkout Sessions API](https://stripe.com/docs/api/checkout/sessions) for additional functionality.
 
 <!-- prettier-ignore -->
-|     | client-only | client-and-server
-:--- | :---: | :---:
-🔨 **Prebuilt checkout page.** Create a payment page that is customizable with your business' name and logo. | ✅  | ✅ |
-🖥️ **Define prices in Dashboard or via API.** Create a price with either the Stripe Dashboard or API. | ✅  | ✅ |
-🔢 **Start subscription for an existing Customer.** Use [Customers](https://stripe.com/docs/api/customers) to keep track of additional customer data.  | ❌  | ✅ |
+|     |
+:--- | :---:
+🔨 **Prebuilt checkout page.** Create a payment page that is customizable with your business' name and logo.   | ✅ |
+🖥️ **Define prices in Dashboard or via API.** Create a price with either the Stripe Dashboard or API.   | ✅ |
+🔢 **Start subscription for an existing Customer.** Use [Customers](https://stripe.com/docs/api/customers) to keep track of additional customer data.   | ✅ |
 
 ## How to run locally
-
-There are two integrations: `client-only` and `client-and-server`. The following are instructions on how to run the `client-and-server` integration:
 
 This sample includes 5 server implementations in Node, Ruby, Python, Java, and PHP.
 
 Follow the steps below to run locally.
-
-**[Client-only] 0. Enable Checkout in the Dashboard**
-
-If you plan on using the client-only integration, go to your [account settings](https://dashboard.stripe.com/account/checkout/settings) in the Dashboard and enable Checkout.
 
 **1. Clone and configure the sample**
 
@@ -52,7 +45,7 @@ The Stripe CLI is the fastest way to clone and configure a sample to run locally
 
 **Using the Stripe CLI**
 
-If you haven't already installed the CLI, follow the [installation steps](https://github.com/stripe/stripe-cli#installation) in the project README. The CLI is useful for cloning samples and locally testing webhooks and Stripe integrations.
+If you haven't already installed the CLI, follow the [installation steps](https://stripe.com/docs/stripe-cli#install) in the project README. The CLI is useful for cloning samples and locally testing webhooks and Stripe integrations.
 
 In your terminal shell, run the Stripe CLI command to clone the sample:
 
@@ -60,7 +53,7 @@ In your terminal shell, run the Stripe CLI command to clone the sample:
 stripe samples create checkout-single-subscription
 ```
 
-The CLI will walk you through picking your integration type, server and client languages, and configuring your .env config file with your Stripe API keys.
+The CLI will walk you through picking your server and client languages and configuring your .env config file with your Stripe API keys.
 
 **Installing and cloning manually**
 
