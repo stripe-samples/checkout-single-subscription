@@ -41,23 +41,32 @@ app.post("/create-checkout-session", async (req, res) => {
   // [customer] - if you have an existing Stripe Customer ID
   // [customer_email] - lets you prefill the email input in the form
   // For full details see https://stripe.com/docs/api/checkout/sessions/create
-  const session = await stripe.checkout.sessions.create({
-    mode: "subscription",
-    payment_method_types: ["card"],
-    line_items: [
-      {
-        price: priceId,
-        quantity: 1,
-      },
-    ],
-    // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
-    success_url: `${domainURL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${domainURL}/canceled.html`,
-  });
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
+      success_url: `${domainURL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${domainURL}/canceled.html`,
+    });
 
-  res.send({
-    sessionId: session.id,
-  });
+    res.send({
+      sessionId: session.id,
+    });
+  } catch (e) {
+    res.status(400);
+    return res.send({
+      error: {
+        message: e.message,
+      }
+    });
+  }
 });
 
 app.get("/setup", (req, res) => {

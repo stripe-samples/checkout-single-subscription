@@ -5,7 +5,6 @@ use Stripe\Stripe;
 
 require 'vendor/autoload.php';
 
-
 $dotenv = Dotenv\Dotenv::create(__DIR__);
 $dotenv->load();
 
@@ -27,14 +26,18 @@ $app->add(function ($request, $response, $next) {
     Stripe::setApiKey(getenv('STRIPE_SECRET_KEY'));
     return $next($request, $response);
 });
-  
-$app->get('/', function (Request $request, Response $response, array $args) {   
+
+$app->get('/', function (Request $request, Response $response, array $args) {
     return $response->write(file_get_contents(getenv('STATIC_DIR') . '/index.html'));
 });
 
 $app->get('/setup', function (Request $request, Response $response, array $args) {
   $pub_key = getenv('STRIPE_PUBLISHABLE_KEY');
-  return $response->withJson([ 'publishableKey' => $pub_key, 'basicPrice' => getenv('BASIC_PRICE_ID'), 'proPrice' => getenv('PRO_PRICE_ID') ]);
+  return $response->withJson([
+    'publishableKey' => $pub_key,
+    'basicPrice' => getenv('BASIC_PRICE_ID'),
+    'proPrice' => getenv('PRO_PRICE_ID')
+  ]);
 });
 
 // Fetch the Checkout Session to display the JSON result on the success page
@@ -59,16 +62,24 @@ $app->post('/create-checkout-session', function(Request $request, Response $resp
   // For full details see https://stripe.com/docs/api/checkout/sessions/create
 
   // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
-  $checkout_session = \Stripe\Checkout\Session::create([
-    'success_url' => $domain_url . '/success.html?session_id={CHECKOUT_SESSION_ID}',
-    'cancel_url' => $domain_url . '/canceled.html',
-    'payment_method_types' => ['card'],
-    'mode' => 'subscription',
-    'line_items' => [[
-      'price' => $body->priceId,
-      'quantity' => 1,
-    ]]
-  ]);
+  try {
+    $checkout_session = \Stripe\Checkout\Session::create([
+      'success_url' => $domain_url . '/success.html?session_id={CHECKOUT_SESSION_ID}',
+      'cancel_url' => $domain_url . '/canceled.html',
+      'payment_method_types' => ['card'],
+      'mode' => 'subscription',
+      'line_items' => [[
+        'price' => $body->priceId,
+        'quantity' => 1,
+      ]]
+    ]);
+  } catch (Exception $e) {
+    return $response->withJson([
+      'error' => [
+        'message' => $e->getError()->message,
+      ],
+    ], 400);
+  }
 
   return $response->withJson(array('sessionId' => $checkout_session['id']));
 });
