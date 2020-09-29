@@ -11,8 +11,8 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/stripe/stripe-go/v71"
-	"github.com/stripe/stripe-go/v71/checkout/session"
 	portalsession "github.com/stripe/stripe-go/v71/billingportal/session"
+	"github.com/stripe/stripe-go/v71/checkout/session"
 	"github.com/stripe/stripe-go/v71/webhook"
 )
 
@@ -41,90 +41,106 @@ func handleSetup(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, struct {
 		PublishableKey string `json:"publishableKey"`
-		BasicPrice string `json:"basicPrice"`
-		ProPrice string `json:"proPrice"`
+		BasicPrice     string `json:"basicPrice"`
+		ProPrice       string `json:"proPrice"`
 	}{
 		PublishableKey: os.Getenv("STRIPE_PUBLISHABLE_KEY"),
-		BasicPrice: os.Getenv("BASIC_PRICE_ID"),
-		ProPrice: os.Getenv("PRO_PRICE_ID"),
+		BasicPrice:     os.Getenv("BASIC_PRICE_ID"),
+		ProPrice:       os.Getenv("PRO_PRICE_ID"),
 	})
 }
 
 func handleCreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
-  if r.Method != "POST" {
-    http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
-    return
-  }
+	if r.Method != "POST" {
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		return
+	}
 
-  var req struct {
-    Price string `json:"priceId"`
-  }
-  if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-    log.Printf("json.NewDecoder.Decode: %v", err)
-    return
-  }
+	var req struct {
+		Price string `json:"priceId"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("json.NewDecoder.Decode: %v", err)
+		return
+	}
 
-  params := &stripe.CheckoutSessionParams{
-    SuccessURL: stripe.String(os.Getenv("DOMAIN") + "/success.html?session_id={CHECKOUT_SESSION_ID}"),
-    CancelURL: stripe.String(os.Getenv("DOMAIN") + "/cancel.html"),
-    PaymentMethodTypes: stripe.StringSlice([]string{
-      "card",
-    }),
-    Mode: stripe.String(string(stripe.CheckoutSessionModeSubscription)),
-    LineItems: []*stripe.CheckoutSessionLineItemParams{
-      &stripe.CheckoutSessionLineItemParams{
-        Price: stripe.String(req.Price),
-        Quantity: stripe.Int64(1),
-      },
-    },
+	// This is the ID of the Stripe Customer.  Typically you'll create the
+	// customer object When the user signs up for your service and you can pull
+	// this out of the database with the authenticated user.
+	//
+	// Note: The customer param is not strictly required for creating a subscription
+	// this demonstrates how you might create a subscription associated with
+	// an existing Stripe Customer object.
+	stripeCustomerID := os.Getenv("CUSTOMER")
 
-    // This is the ID of the Stripe Customer.  Typically you'll create the
-    // customer object When the user signs up for your service and you can pull
-    // this out of the database with the authenticated user.
-    Customer: stripe.String(os.Getenv("CUSTOMER")),
-  }
+	params := &stripe.CheckoutSessionParams{
+		SuccessURL: stripe.String(os.Getenv("DOMAIN") + "/success.html?session_id={CHECKOUT_SESSION_ID}"),
+		CancelURL:  stripe.String(os.Getenv("DOMAIN") + "/cancel.html"),
+		PaymentMethodTypes: stripe.StringSlice([]string{
+			"card",
+		}),
+		Mode: stripe.String(string(stripe.CheckoutSessionModeSubscription)),
+		LineItems: []*stripe.CheckoutSessionLineItemParams{
+			&stripe.CheckoutSessionLineItemParams{
+				Price:    stripe.String(req.Price),
+				Quantity: stripe.Int64(1),
+			},
+		},
+		Customer: stripe.String(stripeCustomerID),
+	}
 
-  s, err := session.New(params)
-  if err != nil {
-    w.WriteHeader(http.StatusBadRequest)
-    writeJSON(w, struct {
-      ErrorData string `json:"error"`
-    }{
-      ErrorData: "test",
-    })
-    return
-  }
+	s, err := session.New(params)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		writeJSON(w, struct {
+			ErrorData string `json:"error"`
+		}{
+			ErrorData: "test",
+		})
+		return
+	}
 
-  writeJSON(w, struct {
-    SessionID string `json:"sessionId"`
-  }{
-    SessionID: s.ID,
-  })
+	writeJSON(w, struct {
+		SessionID string `json:"sessionId"`
+	}{
+		SessionID: s.ID,
+	})
 }
 
 func handleCheckoutSession(w http.ResponseWriter, r *http.Request) {
-  if r.Method != "GET" {
-    http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
-    return
-  }
-  sessionID := r.URL.Query().Get("sessionId")
-  s, _ := session.Get(sessionID, nil)
-  writeJSON(w, s)
+	if r.Method != "GET" {
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		return
+	}
+	sessionID := r.URL.Query().Get("sessionId")
+	s, _ := session.Get(sessionID, nil)
+	writeJSON(w, s)
 }
 
 func handleCustomerPortal(w http.ResponseWriter, r *http.Request) {
-  if r.Method != "POST" {
-    http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
-    return
-  }
-  params := &stripe.BillingPortalSessionParams{
-    Customer: stripe.String(os.Getenv("CUSTOMER")),
-    ReturnURL: stripe.String(os.Getenv("DOMAIN")),
-  }
-  s, _ := portalsession.New(params)
+	if r.Method != "POST" {
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		return
+	}
 
-  http.Redirect(w, r, s.URL, 302)
+	// This is the ID of the Stripe Customer and is typically stored in your
+	// database and would be retrieved along with the currently authenticated
+	// user. For demonstration, we're storing this value in the environment
+	// variables.
+	stripeCustomerID := os.Getenv("CUSTOMER")
+
+	// The URL to which the user is redirected when they are done managing
+	// billing in the portal.
+	returnURL := os.Getenv("DOMAIN")
+
+	params := &stripe.BillingPortalSessionParams{
+		Customer:  stripe.String(stripeCustomerID),
+		ReturnURL: stripe.String(returnURL),
+	}
+	s, _ := portalsession.New(params)
+
+	http.Redirect(w, r, s.URL, 302)
 }
 
 func handleWebhook(w http.ResponseWriter, r *http.Request) {

@@ -35,6 +35,14 @@ app.post("/create-checkout-session", async (req, res) => {
   const domainURL = process.env.DOMAIN;
   const { priceId } = req.body;
 
+  // This is the ID of the Stripe Customer. Typically this is stored
+  // in your database and retrieved with the authenticated user.
+  //
+  // Note: The customer ID isn't required to start a Subscription, however
+  // it can be passed as an argument when creating a Checkout Session which
+  // associates the new Subscription with an existing Customer.
+  const stripeCustomerId = process.env.CUSTOMER;
+
   // Create new Checkout Session for the order
   // Other optional params include:
   // [billing_address_collection] - to display billing address details on the page
@@ -54,7 +62,7 @@ app.post("/create-checkout-session", async (req, res) => {
       // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
       success_url: `${domainURL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${domainURL}/canceled.html`,
-      customer: process.env.CUSTOMER,
+      customer: stripeCustomerId,
     });
 
     res.send({
@@ -79,9 +87,17 @@ app.get("/setup", (req, res) => {
 });
 
 app.post('/customer-portal', async (req, res) => {
+  // This is the ID of the Stripe Customer. Typically, this is stored alongside
+  // your authenticated user in the database.
+  const stripeCustomerId = process.env.CUSTOMER;
+
+  // This is the url to which the customer will be redirected when they are done
+  // managign their billing with the portal.
+  const returnUrl = process.env.DOMAIN;
+
   const session = await stripe.billingPortal.sessions.create({
-    customer: process.env.CUSTOMER,
-    return_url: process.env.DOMAIN,
+    customer: stripeCustomerId,
+    return_url: returnUrl,
   });
   res.redirect(301, session.url);
 });

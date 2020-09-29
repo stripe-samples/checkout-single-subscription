@@ -38,6 +38,15 @@ end
 post '/create-checkout-session' do
   content_type 'application/json'
   data = JSON.parse(request.body.read)
+
+  # This is the ID of the Stripe Customer object.  Typically you'll create the
+  # Stripe Customer when a new user registers for your application and you'll
+  # store their ID in your database. Here you can pass that ID along to
+  # associate checkout sessions with a given customer. Note that it's not
+  # strictly required, but is useful for associating a Subscription to an
+  # existing Customer.
+  stripe_customer_id = ENV['CUSTOMER']
+
   # Create new Checkout Session for the order
   # Other optional params include:
   # [billing_address_collection] - to display billing address details on the page
@@ -56,12 +65,7 @@ post '/create-checkout-session' do
         quantity: 1,
         price: data['priceId'],
       }],
-
-      # This is the ID of the Stripe Customer object.  Typically you'll create
-      # the Stripe Customer when a new user registers for your application and
-      # you'll store their ID in your database. Here you can pass that ID along
-      # to associate checkout sessions with a given customer.
-      customer: ENV['CUSTOMER'],
+      customer: stripe_customer_id
     )
   rescue => e
     halt 400,
@@ -75,9 +79,19 @@ post '/create-checkout-session' do
 end
 
 post '/customer-portal' do
+  # This is the ID of the Stripe Customer. Typically it's stored in your database
+  # and retrieved alongside the authenticated user.
+  #
+  # For example, in Rails, you might use something like `current_user.stripe_customer_id`
+  stripe_customer_id = ENV['CUSTOMER']
+
+  # This is the URL to which users will be redirected after they are done
+  # managing their billing.
+  return_url = ENV['DOMAIN']
+
   session = Stripe::BillingPortal::Session.create({
-    customer: ENV['CUSTOMER'],
-    return_url: ENV['DOMAIN'],
+    customer: stripe_customer_id,
+    return_url: return_url,
   })
   redirect session.url, 302
 end

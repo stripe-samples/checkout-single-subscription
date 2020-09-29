@@ -53,6 +53,13 @@ $app->post('/create-checkout-session', function(Request $request, Response $resp
   $domain_url = getenv('DOMAIN');
   $body = json_decode($request->getBody());
 
+  // This is the ID of the Stripe Customer. Typically, this is stored
+  // in your database and retrieved alongside the authenticated user.
+  //
+  // Note: The customer parameter is not required, however if passed
+  // will associate the new Subscription with an existing Customer.
+  $stripe_customer_id = getenv('CUSTOMER');
+
   // Create new Checkout Session for the order
   // Other optional params include:
   // [billing_address_collection] - to display billing address details on the page
@@ -60,7 +67,6 @@ $app->post('/create-checkout-session', function(Request $request, Response $resp
   // [payment_intent_data] - lets capture the payment later
   // [customer_email] - lets you prefill the email input in the form
   // For full details see https://stripe.com/docs/api/checkout/sessions/create
-
   // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
   try {
     $checkout_session = \Stripe\Checkout\Session::create([
@@ -72,7 +78,7 @@ $app->post('/create-checkout-session', function(Request $request, Response $resp
         'price' => $body->priceId,
         'quantity' => 1,
       ]],
-      'customer' => getenv('CUSTOMER'),
+      'customer' => $stripe_customer_id,
     ]);
   } catch (Exception $e) {
     return $response->withJson([
@@ -86,6 +92,15 @@ $app->post('/create-checkout-session', function(Request $request, Response $resp
 });
 
 $app->post('/customer-portal', function(Request $request, Response $response) {
+  // This is the ID of the Stripe Customer. Typically this is stored in your
+  // database and retrieved alongside the authenticated customer. For demonstration
+  // purposes we have stored this value in the environment variables.
+  $stripe_customer_id = getenv('CUSTOMER');
+
+  // This is the URL to which the user will be redirected after they have
+  // finished managing their billing in the portal.
+  $return_url = getenv('DOMAIN');
+
   $session = \Stripe\BillingPortal\Session::create([
     'customer' => getenv('CUSTOMER'),
     'return_url' => getenv('DOMAIN'),

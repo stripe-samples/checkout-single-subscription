@@ -51,6 +51,14 @@ def create_checkout_session():
     data = json.loads(request.data)
     domain_url = os.getenv('DOMAIN')
 
+    # This is the Stripe Customer ID. Typically, it's stored in your database
+    # and is retrieved alongside the authenticated user. For demonstration,
+    # we're storing in the environment variable.
+    # Note: The customer parameter is not strictly required for creating a
+    # Subscription with Checkout. If passed, the new Subscription will be associated
+    # with the existing Customer.
+    stripe_customer_id = os.getenv("CUSTOMER")
+
     try:
         # Create new Checkout Session for the order
         # Other optional params include:
@@ -72,7 +80,7 @@ def create_checkout_session():
                     "quantity": 1
                 }
             ],
-            customer=os.getenv("CUSTOMER"),
+            customer=stripe_customer_id,
         )
         return jsonify({'sessionId': checkout_session['id']})
     except Exception as e:
@@ -81,9 +89,21 @@ def create_checkout_session():
 
 @app.route('/customer-portal', methods=['POST'])
 def customer_portal():
+    # This is the Stripe Customer ID. Typically, it's stored in your database
+    # and is retrieved alongside the authenticated user. For demonstration,
+    # we're storing in the environment variable.
+    # Note: The customer parameter is not strictly required for creating a
+    # Subscription with Checkout. If passed, the new Subscription will be associated
+    # with the existing Customer.
+    stripe_customer_id = os.getenv("CUSTOMER")
+
+    # This is the URL to which the customer will be redirected after they are
+    # done managing their billing with the portal.
+    return_url = os.getenv("DOMAIN")
+
     session = stripe.billing_portal.Session.create(
-        customer=os.getenv("CUSTOMER"),
-        return_url=os.getenv("DOMAIN"))
+        customer=stripe_customer_id,
+        return_url=return_url)
     return redirect(session.url, 302)
 
 
