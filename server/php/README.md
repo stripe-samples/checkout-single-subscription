@@ -1,7 +1,7 @@
-# Using Checkout for a subscription with PHP 
+# Using Checkout for a subscription with PHP
 
 ## Requirements
-* PHP 
+* PHP
 
 ## How to run
 
@@ -11,10 +11,10 @@
 composer install
 ```
 
-2. Copy .config.ini.sample to .config.ini and replace with your Stripe API keys 
+2. Copy .config.ini.sample to .config.ini and replace with your Stripe API keys
 
 ```
-cp .config.ini.sample .config.ini
+cp config.ini.sample config.ini
 ```
 
 3. Run the server locally

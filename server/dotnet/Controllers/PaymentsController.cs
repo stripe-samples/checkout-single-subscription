@@ -34,6 +34,12 @@ namespace server.Controllers
         [HttpPost("create-checkout-session")]
         public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateCheckoutSessionRequest req)
         {
+            // This ID is typically stored with the authenticated user in your database. For
+            // demonstration purposes, we're pulling this value from environment variables.
+            //
+            // Note this is not required to create a Subscription, but demonstrates how you would
+            // create a new Subscription using Stripe Checkout with an existing user.
+            var stripeCustomerId = this.options.Value.Customer;
 
             var options = new SessionCreateOptions
             {
@@ -52,6 +58,7 @@ namespace server.Controllers
                         Quantity = 1,
                     },
                 },
+                Customer = stripeCustomerId,
             };
             var service = new SessionService(this.client);
             try
@@ -81,6 +88,29 @@ namespace server.Controllers
             var service = new SessionService(this.client);
             var session = await service.GetAsync(sessionId);
             return Ok(session);
+        }
+
+        [HttpPost("customer-portal")]
+        public async Task<IActionResult> CustomerPortal()
+        {
+            // This ID is typically stored with the authenticated
+            // user in your database. For demonstration purposes, we're
+            // pulling this value from environment variables.
+            var stripeCustomerId = this.options.Value.Customer;
+
+            // This is the URL to which your customer will return after
+            // they are done managing billing in the Customer Portal.
+            var returnUrl = this.options.Value.Domain;
+
+            var options = new Stripe.BillingPortal.SessionCreateOptions
+            {
+                Customer = stripeCustomerId,
+                ReturnUrl = returnUrl,
+            };
+            var service = new Stripe.BillingPortal.SessionService(this.client);
+            var session = await service.CreateAsync(options);
+
+            return Redirect(session.Url);
         }
 
         [HttpPost("webhook")]

@@ -119,7 +119,13 @@ end
 def post_json(path, payload, **kwargs)
   puts "Posting json to #{path}"
   defaults = {content_type: :json}
-  response = RestClient.post("#{SERVER_URL}#{path}", payload.to_json, defaults.merge(**kwargs))
+  response = RestClient.post("#{SERVER_URL}#{path}", payload.to_json, defaults.merge(**kwargs)) do |res, req, result, &blk|
+    if [301, 302, 307].include? res.code
+      return [res.headers[:location], res.code]
+    else
+      res.return!(&blk)
+    end
+  end
   [JSON.parse(response.body), response.code]
 rescue => e
   [JSON.parse(e.http_body), e.http_code]
