@@ -5,7 +5,7 @@
       {
         "name": "main",
         "clients": ["web"],
-        "servers": ["java", "node", "php-slim", "php", "python", "ruby"]
+        "servers": ["java", "node", "php-slim", "php", "python", "ruby", "dotnet", "go"]
       }
     ]
   }
