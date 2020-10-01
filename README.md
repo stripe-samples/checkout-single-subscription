@@ -2,7 +2,7 @@
 
 [Checkout](https://stripe.com/docs/payments/checkout) is a pre-built payment page that lets you accept cards and Apple Pay. [Billing](https://stripe.com/docs/billing) is a suite of APIs that lets you model complex subscription plans. You can combine the two products to get a subscription payment page up and running without the need of a server.
 
-When your customer is ready to pay, use [Stripe.js](https://stripe.com/docs/js) with the ID of your [Price](https://stripe.com/docs/api/prices) to redirect them to your Checkout page.
+When your customer is ready to pay, use [Stripe.js](https://stripe.com/docs/js) with the ID of your [Checkout Session](https://stripe.com/docs/api/checkout/sessions/object) to redirect them to your Checkout page.
 
 <img src="./checkout-demo.gif" alt="A gif of the Checkout payment page rendering" align="center">
 
@@ -27,7 +27,7 @@ For more features see the [Checkout documentation](https://stripe.com/docs/payme
 The integration uses the [Checkout Sessions API](https://stripe.com/docs/api/checkout/sessions) for additional functionality.
 
 <!-- prettier-ignore -->
-|      |       |
+|      | main |
 | :--- | :---: |
 | 🔨 **Prebuilt checkout page.** Create a payment page that is customizable with your business' name and logo.   | ✅ |
 | 🖥️ **Define prices in Dashboard or via API.** Create a price with either the Stripe Dashboard or API.   | ✅ |
@@ -35,7 +35,7 @@ The integration uses the [Checkout Sessions API](https://stripe.com/docs/api/che
 
 ## How to run locally
 
-This sample includes 5 server implementations in Node, Ruby, Python, Java, and PHP.
+This sample includes 8 server implementations in Node, Ruby, Python, Java, PHP, PHP with Slim, Go and .NET.
 
 Follow the steps below to run locally.
 
@@ -53,7 +53,7 @@ In your terminal shell, run the Stripe CLI command to clone the sample:
 stripe samples create checkout-single-subscription
 ```
 
-The CLI will walk you through picking your server and client languages and configuring your .env config file with your Stripe API keys.
+The CLI will walk you through picking your server and client languages and configuring your `.env` config file with your Stripe API keys.
 
 **Installing and cloning manually**
 
@@ -63,7 +63,7 @@ If you do not want to use the Stripe CLI, you can manually clone and configure t
 git clone https://github.com/stripe-samples/checkout-single-subscription
 ```
 
-Copy the .env.example file into a file named .env in the folder of the server you want to use. For example:
+Copy the `.env.example` file into a file named `.env` in the folder of the server you want to use. For example:
 
 ```
 cp .env.example client-and-server/server/node/.env
@@ -85,6 +85,8 @@ The other environment variables are configurable:
 `PRO_PRICE_ID` requires a Price ID for a "pro" subscription.
 
 `DOMAIN` is the domain of your website, where Checkout will redirect back to after the customer completes the payment on the Checkout page.
+
+`CUSTOMER` is an ID for a Stripe Customer.
 
 **2. Create Products and Prices on Stripe**
 
@@ -114,7 +116,7 @@ First [install the CLI](https://stripe.com/docs/stripe-cli) and [link your Strip
 stripe listen --forward-to localhost:4242/webhook
 ```
 
-The CLI will print a webhook secret key to the console. Set `STRIPE_WEBHOOK_SECRET` to this value in your .env file.
+The CLI will print a webhook secret key to the console. Set `STRIPE_WEBHOOK_SECRET` to this value in your `.env` file.
 
 You should see events logged in the console where the CLI is running.
 
@@ -142,3 +144,4 @@ If you have questions, comments, or need help with code, we're here to help:
 ## Author(s)
 
 [@adreyfus-stripe](https://twitter.com/adrind)
+[@cjavilla-stripe](https://twitter.com/cjav_dev)
