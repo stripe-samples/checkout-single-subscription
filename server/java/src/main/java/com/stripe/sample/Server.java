@@ -19,20 +19,27 @@ import com.stripe.model.checkout.Session;
 import com.stripe.exception.*;
 import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
-import com.stripe.param.checkout.SessionCreateParams.LineItem;
-import com.stripe.param.checkout.SessionCreateParams.PaymentMethodType;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class Server {
     private static Gson gson = new Gson();
 
-    static class PostBody {
+    static class CreateCheckoutSessionRequest {
         @SerializedName("priceId")
         String priceId;
 
         public String getPriceId() {
             return priceId;
+        }
+    }
+
+    static class CreateCustomerPortalSessionRequest {
+        @SerializedName("customerId")
+        String customerId;
+
+        public String getCustomerId() {
+            return customerId;
         }
     }
 
@@ -68,10 +75,9 @@ public class Server {
 
         post("/create-checkout-session", (request, response) -> {
             response.type("application/json");
-            PostBody postBody = gson.fromJson(request.body(), PostBody.class);
+            CreateCheckoutSessionRequest req = gson.fromJson(request.body(), CreateCheckoutSessionRequest.class);
 
             String domainUrl = dotenv.get("DOMAIN");
-            SessionCreateParams.Builder builder = new SessionCreateParams.Builder();
 
             // Create new Checkout Session for the order
             // Other optional params include:
@@ -83,18 +89,45 @@ public class Server {
 
             // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID
             // set as a query param
-            builder.setSuccessUrl(domainUrl + "/success.html?session_id={CHECKOUT_SESSION_ID}")
-                    .setCancelUrl(domainUrl + "/canceled.html").addPaymentMethodType(PaymentMethodType.CARD)
-                    .setMode(SessionCreateParams.Mode.SUBSCRIPTION);
+            SessionCreateParams params = new SessionCreateParams.Builder()
+                .setSuccessUrl(domainUrl + "/success.html?session_id={CHECKOUT_SESSION_ID}")
+                .setCancelUrl(domainUrl + "/canceled.html")
+                .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
+                .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+                .addLineItem(new SessionCreateParams.LineItem.Builder()
+                  .setQuantity(1L)
+                  .setPrice(req.getPriceId())
+                  .build()
+                )
+                .build();
 
-            LineItem item = new LineItem.Builder().setQuantity(new Long(1)).setPrice(postBody.getPriceId()).build();
-            builder.addLineItem(item);
+            try {
+                Session session = Session.create(params);
+                Map<String, Object> responseData = new HashMap<>();
+                responseData.put("sessionId", session.getId());
+                return gson.toJson(responseData);
+            } catch(Exception e) {
+                Map<String, Object> messageData = new HashMap<>();
+                messageData.put("message", e.getMessage());
+                Map<String, Object> responseData = new HashMap<>();
+                responseData.put("error", messageData);
+                response.status(400);
+                return gson.toJson(responseData);
+            }
+        });
 
-            SessionCreateParams createParams = builder.build();
-            Session session = Session.create(createParams);
+        post("/customer-portal", (request, response) -> {
+            response.type("application/json");
+            CreateCustomerPortalSessionRequest req = gson.fromJson(request.body(), CreateCustomerPortalSessionRequest.class);
+            String domainUrl = dotenv.get("DOMAIN");
 
+            com.stripe.param.billingportal.SessionCreateParams params = new com.stripe.param.billingportal.SessionCreateParams.Builder()
+                .setReturnUrl(domainUrl)
+                .setCustomer(req.getCustomerId())
+                .build();
+            com.stripe.model.billingportal.Session session = com.stripe.model.billingportal.Session.create(params);
             Map<String, Object> responseData = new HashMap<>();
-            responseData.put("sessionId", session.getId());
+            responseData.put("url", session.getUrl());
             return gson.toJson(responseData);
         });
 

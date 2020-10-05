@@ -32,7 +32,6 @@ namespace server
                 options.BasicPrice = Environment.GetEnvironmentVariable("BASIC_PRICE_ID");
                 options.ProPrice = Environment.GetEnvironmentVariable("PRO_PRICE_ID");
                 options.Domain = Environment.GetEnvironmentVariable("DOMAIN");
-                options.Customer = Environment.GetEnvironmentVariable("CUSTOMER");
             });
 
             services.AddControllersWithViews().AddNewtonsoftJson(options =>
