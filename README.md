@@ -66,7 +66,7 @@ git clone https://github.com/stripe-samples/checkout-single-subscription
 Copy the `.env.example` file into a file named `.env` in the folder of the server you want to use. For example:
 
 ```
-cp .env.example client-and-server/server/node/.env
+cp .env.example server/node/.env
 ```
 
 You will need a Stripe account in order to run the demo. Once you set up your account, go to the Stripe [developer dashboard](https://stripe.com/docs/development/quickstart#api-keys) to find your API keys.
@@ -101,7 +101,7 @@ Pick the server language you want and follow the instructions in the server fold
 For example, if you want to run the Node server:
 
 ```
-cd client-and-server/server/node # there's a README in this folder with instructions
+cd server/node # there's a README in this folder with instructions
 npm install
 npm start
 ```
