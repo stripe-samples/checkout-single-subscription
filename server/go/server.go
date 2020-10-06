@@ -65,15 +65,6 @@ func handleCreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// This is the ID of the Stripe Customer.  Typically you'll create the
-	// customer object When the user signs up for your service and you can pull
-	// this out of the database with the authenticated user.
-	//
-	// Note: The customer param is not strictly required for creating a subscription
-	// this demonstrates how you might create a subscription associated with
-	// an existing Stripe Customer object.
-	stripeCustomerID := os.Getenv("CUSTOMER")
-
 	params := &stripe.CheckoutSessionParams{
 		SuccessURL: stripe.String(os.Getenv("DOMAIN") + "/success.html?session_id={CHECKOUT_SESSION_ID}"),
 		CancelURL:  stripe.String(os.Getenv("DOMAIN") + "/cancel.html"),
@@ -87,7 +78,6 @@ func handleCreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 				Quantity: stripe.Int64(1),
 			},
 		},
-		Customer: stripe.String(stripeCustomerID),
 	}
 
 	s, err := session.New(params)
@@ -124,11 +114,20 @@ func handleCustomerPortal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var req struct {
+		CustomerID string `json:"customerId"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("json.NewDecoder.Decode: %v", err)
+		return
+	}
+
 	// This is the ID of the Stripe Customer and is typically stored in your
 	// database and would be retrieved along with the currently authenticated
 	// user. For demonstration, we're storing this value in the environment
 	// variables.
-	stripeCustomerID := os.Getenv("CUSTOMER")
+	stripeCustomerID := req.CustomerID
 
 	// The URL to which the user is redirected when they are done managing
 	// billing in the portal.
@@ -140,7 +139,11 @@ func handleCustomerPortal(w http.ResponseWriter, r *http.Request) {
 	}
 	s, _ := portalsession.New(params)
 
-	http.Redirect(w, r, s.URL, 302)
+	writeJSON(w, struct {
+		URL string `json:"url"`
+	}{
+		URL: s.URL,
+	})
 }
 
 func handleWebhook(w http.ResponseWriter, r *http.Request) {

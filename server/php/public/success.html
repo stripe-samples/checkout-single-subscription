@@ -8,6 +8,8 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="css/normalize.css" />
     <link rel="stylesheet" href="css/global.css" />
+
+    <script src="./success.js" defer></script>
   </head>
 
   <body>
@@ -29,7 +31,7 @@
               </pre>
             </div>
             <button onclick="window.location.href = '/';">Restart demo</button>
-            <form action="/customer-portal.php" method="post">
+            <form id="manage-billing-form">
               <button>Manage Billing</button>
             </form>
           </div>
@@ -59,19 +61,5 @@
         </div>
       </div>
     </div>
-    <script>
-      var urlParams = new URLSearchParams(window.location.search);
-      var sessionId = urlParams.get("session_id")
-      if (sessionId) {
-        fetch("/get-checkout-session.php?sessionId=" + sessionId).then(function(result){
-          return result.json()
-        }).then(function(session){
-          var sessionJSON = JSON.stringify(session, null, 2);
-          document.querySelector("pre").textContent = sessionJSON;
-        }).catch(function(err){
-          console.log('Error when fetching Checkout session', err);
-        });
-      }
-    </script>
   </body>
 </html>

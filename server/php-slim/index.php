@@ -53,13 +53,6 @@ $app->post('/create-checkout-session', function(Request $request, Response $resp
   $domain_url = getenv('DOMAIN');
   $body = json_decode($request->getBody());
 
-  // This is the ID of the Stripe Customer. Typically, this is stored
-  // in your database and retrieved alongside the authenticated user.
-  //
-  // Note: The customer parameter is not required, however if passed
-  // will associate the new Subscription with an existing Customer.
-  $stripe_customer_id = getenv('CUSTOMER');
-
   // Create new Checkout Session for the order
   // Other optional params include:
   // [billing_address_collection] - to display billing address details on the page
@@ -78,7 +71,6 @@ $app->post('/create-checkout-session', function(Request $request, Response $resp
         'price' => $body->priceId,
         'quantity' => 1,
       ]],
-      'customer' => $stripe_customer_id,
     ]);
   } catch (Exception $e) {
     return $response->withJson([
@@ -88,24 +80,26 @@ $app->post('/create-checkout-session', function(Request $request, Response $resp
     ], 400);
   }
 
-  return $response->withJson(array('sessionId' => $checkout_session['id']));
+  return $response->withJson(['sessionId' => $checkout_session['id']]);
 });
 
 $app->post('/customer-portal', function(Request $request, Response $response) {
+  $body = json_decode($request->getBody());
   // This is the ID of the Stripe Customer. Typically this is stored in your
   // database and retrieved alongside the authenticated customer. For demonstration
   // purposes we have stored this value in the environment variables.
-  $stripe_customer_id = getenv('CUSTOMER');
+  $stripe_customer_id = $body->customerId;
 
   // This is the URL to which the user will be redirected after they have
   // finished managing their billing in the portal.
   $return_url = getenv('DOMAIN');
 
   $session = \Stripe\BillingPortal\Session::create([
-    'customer' => getenv('CUSTOMER'),
-    'return_url' => getenv('DOMAIN'),
+    'customer' => $stripe_customer_id,
+    'return_url' => $return_url,
   ]);
-  return $response->withRedirect($session->url);
+
+  return $response->withJson(['url' => $session->url]);
 });
 
 $app->post('/webhook', function(Request $request, Response $response) {

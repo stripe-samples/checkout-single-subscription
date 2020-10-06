@@ -39,21 +39,12 @@ post '/create-checkout-session' do
   content_type 'application/json'
   data = JSON.parse(request.body.read)
 
-  # This is the ID of the Stripe Customer object.  Typically you'll create the
-  # Stripe Customer when a new user registers for your application and you'll
-  # store their ID in your database. Here you can pass that ID along to
-  # associate checkout sessions with a given customer. Note that it's not
-  # strictly required, but is useful for associating a Subscription to an
-  # existing Customer.
-  stripe_customer_id = ENV['CUSTOMER']
-
   # Create new Checkout Session for the order
   # Other optional params include:
   # [billing_address_collection] - to display billing address details on the page
   # [customer] - if you have an existing Stripe Customer ID
   # [customer_email] - lets you prefill the email input in the form
-  # For full details see https:#stripe.com/docs/api/checkout/sessions/create
-
+  # For full details see https://stripe.com/docs/api/checkout/sessions/create
   # ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
   begin
     session = Stripe::Checkout::Session.create(
@@ -65,7 +56,6 @@ post '/create-checkout-session' do
         quantity: 1,
         price: data['priceId'],
       }],
-      customer: stripe_customer_id
     )
   rescue => e
     halt 400,
@@ -79,11 +69,20 @@ post '/create-checkout-session' do
 end
 
 post '/customer-portal' do
+  content_type 'application/json'
+  data = JSON.parse(request.body.read)
+
   # This is the ID of the Stripe Customer. Typically it's stored in your database
   # and retrieved alongside the authenticated user.
   #
   # For example, in Rails, you might use something like `current_user.stripe_customer_id`
-  stripe_customer_id = ENV['CUSTOMER']
+  #
+  # DANGER: In production, use the logged in user, not the
+  # customer ID passed from the client! Failing to change this
+  # will allow users to log into eachothers accounts! For
+  # demonstration without a database, we're using the ID of
+  # the customer passed from the client.
+  stripe_customer_id = data['customerId']
 
   # This is the URL to which users will be redirected after they are done
   # managing their billing.
@@ -93,7 +92,10 @@ post '/customer-portal' do
     customer: stripe_customer_id,
     return_url: return_url,
   })
-  redirect session.url, 302
+
+  {
+    url: session.url
+  }.to_json
 end
 
 post '/webhook' do

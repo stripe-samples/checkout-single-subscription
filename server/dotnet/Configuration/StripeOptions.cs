@@ -7,5 +7,4 @@
     public string BasicPrice { get; set; }
     public string ProPrice { get; set; }
     public string Domain { get; set; }
-    public string Customer { get; set; }
 }

@@ -30,9 +30,14 @@ RSpec.describe 'server APIs' do
     expect(resp2).to have_key('id')
     expect(resp2['id']).to eq(resp['sessionId'])
 
+    customer = Stripe::Customer.list(limit: 1).data.first
+    expect(customer).not_to be_nil
+
     # Create customer portal session
-    loc, status = post_json('/customer-portal', {})
-    expect(status).to eq(302)
-    expect(loc).to_not be_nil
+    resp, status = post_json('/customer-portal', {
+      customerId: customer.id,
+    })
+    expect(status).to eq(200)
+    expect(resp).to have_key('url')
   end
 end

@@ -4,4 +4,3 @@ stripe_webhook_secret = whsec_1234
 domain = https://example.com/
 basic_price_id = price_123
 pro_price_id = price_456
-customer = cus_123abc

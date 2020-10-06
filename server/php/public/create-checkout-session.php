@@ -4,14 +4,6 @@ require_once 'shared.php';
 
 $domain_url = $config['domain'];
 
-// The ID of the Stripe Customer. This typically stored in your database
-// and retrieve alongside the authenticated user. For demonstration, we're
-// storing in the config variables.
-//
-// Note: This is not strictly required to create a Subscription. If passed,
-// it will associate the new Subscription with the existing Customer.
-$stripe_customer_id = $config['customer'];
-
 // Create new Checkout Session for the order
 // Other optional params include:
 // [billing_address_collection] - to display billing address details on the page
@@ -29,8 +21,7 @@ $checkout_session = \Stripe\Checkout\Session::create([
 	'line_items' => [[
 	  'price' => $body->priceId,
 	  'quantity' => 1,
-  ]],
-  'customer' => $stripe_customer_id,
+  ]]
 ]);
 
 echo json_encode(['sessionId' => $checkout_session['id']]);
