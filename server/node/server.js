@@ -1,9 +1,14 @@
 const express = require("express");
 const app = express();
-const { resolve } = require("path");
-// Copy the .env.example in the root into a .env file in this folder
+const path = require('path');
 
-const env = require("dotenv").config({ path: "./.env" });
+// Copy the .env.example in the root into a .env file in this folder
+const envFilePath = path.resolve(__dirname, './.env');
+const env = require("dotenv").config({ path: envFilePath });
+if (env.error) {
+  throw new Error(`Unable to load the .env file from ${envFilePath}. Please copy .env.example to ${envFilePath}`);
+}
+
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 app.use(express.static(process.env.STATIC_DIR));
@@ -20,8 +25,8 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-  const path = resolve(process.env.STATIC_DIR + "/index.html");
-  res.sendFile(path);
+  const filePath = path.resolve(process.env.STATIC_DIR + "/index.html");
+  res.sendFile(filePath);
 });
 
 // Fetch the Checkout Session to display the JSON result on the success page
@@ -132,4 +137,4 @@ app.post("/webhook", async (req, res) => {
   res.sendStatus(200);
 });
 
-app.listen(4242, () => console.log(`Node server listening on port ${4242}!`));
+app.listen(4242, () => console.log(`Node server listening at http://localhost:${4242}/`));
