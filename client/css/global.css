@@ -373,7 +373,7 @@ pre {
   font-weight: 600;
 }
 
-.price-table-title {
+.sr-main h1 {
   font-size: x-large;
   color: #ffffff;
   font-weight: 600;
@@ -386,7 +386,7 @@ pre {
   box-shadow: 0 2px 5px 0 rgba(60, 66, 87, .08), 0 1px 1px 0 rgba(0, 0, 0, .12);
 }
 
-.price-table-plan {
+.price-table-container section {
   border-radius: 6px;
   padding: 32px 28px;
   display: flex;
@@ -396,48 +396,47 @@ pre {
   background-color: #ffffff;
 }
 
-.price-table-plan-first {
+.price-table-container section:first-of-type {
   border-radius: 6px 0px 0px 6px;
   border-right: 1px solid #efefef;
 }
 
-.price-table-plan-last {
+.price-table-container section:last-of-type {
   border-radius: 0px 6px 6px 0px;
 }
 
-.price-table-plan-name,
-.price-table-price,
-.price-table-duration {
-  text-align: center;
-}
-
-.price-table-plan-name {
-  color: #7F7F7F;
-  font-size: large;
-  margin-top: 8px;
-}
-.price-table-price {
-  color: #000000;
-  font-size: xx-large;
-  font-weight: 600;
-  margin-bottom: 8px;
-  margin-top: 8px;
-}
-.price-table-duration {
-  color: #969696;
-  font-size: smaller;
-}
-
-.price-table-button {
+.price-table-container button {
   background-color: #F0F0F0;
   color: #000000;
   border-radius: 64px;
   padding: 8px 16px;
 }
 
-.price-table-button:hover {
+.price-table-container button:hover {
   background-color: #d6d6d6;
   filter: none;
+}
+
+.price-table-container .name {
+  color: #7F7F7F;
+  font-size: large;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.price-table-container .price {
+  color: #000000;
+  font-size: xx-large;
+  font-weight: 600;
+  margin-bottom: 8px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.price-table-container .duration {
+  color: #969696;
+  font-size: smaller;
+  text-align: center;
 }
 
 .completed-view-section {
