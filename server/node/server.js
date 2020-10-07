@@ -1,9 +1,14 @@
 const express = require("express");
 const app = express();
-const { resolve } = require("path");
-// Copy the .env.example in the root into a .env file in this folder
+const path = require('path');
 
-const env = require("dotenv").config({ path: "./.env" });
+// Copy the .env.example in the root into a .env file in this folder
+const envFilePath = path.resolve('./.env');
+const env = require("dotenv").config({ path: envFilePath });
+if (env.error) {
+  throw new Error(`Unable to load the .env file from ${envFilePath}. Please copy .env.example to ${envFilePath}`);
+}
+
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 app.use(express.static(process.env.STATIC_DIR));
@@ -20,8 +25,8 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-  const path = resolve(process.env.STATIC_DIR + "/index.html");
-  res.sendFile(path);
+  const filePath = path.resolve(process.env.STATIC_DIR + "/index.html");
+  res.sendFile(filePath);
 });
 
 // Fetch the Checkout Session to display the JSON result on the success page
