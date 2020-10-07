@@ -106,23 +106,7 @@ Repeat these steps for to create a second product and price.
 
 Next, open `.env` in the folder of the server you want to use, and update the values for `BASIC_PRICE_ID` and  `PRO_PRICE_ID` with the price IDs of the two prices you added.
 
-**3. Create a customer**
-
-**Using the Stripe CLI**
-
-```
-stripe customers create --email=jenny.rosen@example.com
-```
-
-**Using the Dashboard**
-
-You can create Customers [in the dashboard](https://dashboard.stripe.com/customers).
-
-**Update CUSTOMER in your .env file**
-
-Next, update the value for `CUSTOMER` in `.env` with the ID of the customer you created.
-
-**4. Follow the server instructions on how to run:**
+**3. Follow the server instructions on how to run:**
 
 Pick the server language you want and follow the instructions in the server folder README on how to run.
 
