@@ -76,25 +76,53 @@ STRIPE_PUBLISHABLE_KEY=<replace-with-your-publishable-key>
 STRIPE_SECRET_KEY=<replace-with-your-secret-key>
 ```
 
-The other environment variables are configurable:
-
-`STATIC_DIR` tells the server where to the client files are located and does not need to be modified unless you move the server files.
-
-`BASIC_PRICE_ID` requires a Price ID for a "basic" subscription.
-
-`PRO_PRICE_ID` requires a Price ID for a "pro" subscription.
-
-`DOMAIN` is the domain of your website, where Checkout will redirect back to after the customer completes the payment on the Checkout page.
-
-`CUSTOMER` is an ID for a Stripe Customer.
-
 **2. Create Products and Prices on Stripe**
 
 This sample requires two [Price](https://stripe.com/docs/api/prices/object) IDs to create the Checkout page. Products and Prices are objects on Stripe that let you model a subscription.
 
-You can create Products and Prices [in the dashboard](https://dashboard.stripe.com/products) or via [the API](https://stripe.com/docs/api/prices/create). Create two recurring Prices to run this sample.
+**Using the Stripe CLI**
 
-**3. Follow the server instructions on how to run:**
+```
+stripe products create --name="Premium" --description="Premium plan"
+```
+
+Create the price for the premium product, passing the product ID from the response:
+
+```
+stripe prices create \
+  -d product=prod_XYZ \
+  -d unit_amount=1800 \
+  -d currency=usd \
+  -d "recurring[interval]"=month
+```
+
+**Using the Dashboard**
+
+You can create Products and Prices [in the dashboard](https://dashboard.stripe.com/products). Create two recurring Prices to run this sample.
+
+**Update BASIC_PRICE_ID and PRO_PRICE_ID in your .env file**
+
+Repeat these steps for to create a second product and price.
+
+Next, open `.env` in the folder of the server you want to use, and update the values for `BASIC_PRICE_ID` and  `PRO_PRICE_ID` with the price IDs of the two prices you added.
+
+**3. Create a customer**
+
+**Using the Stripe CLI**
+
+```
+stripe customers create --email=jenny.rosen@example.com
+```
+
+**Using the Dashboard**
+
+You can create Customers [in the dashboard](https://dashboard.stripe.com/customers).
+
+**Update CUSTOMER in your .env file**
+
+Next, update the value for `CUSTOMER` in `.env` with the ID of the customer you created.
+
+**4. Follow the server instructions on how to run:**
 
 Pick the server language you want and follow the instructions in the server folder README on how to run.
 
@@ -106,7 +134,11 @@ npm install
 npm start
 ```
 
-**4. [Optional] Run a webhook locally:**
+**[Optional] Customize your branding**
+
+To customize your icon, logo and colors for Checkout and the Customer Portal, go to [Branding settings](https://dashboard.stripe.com/account/branding) in the Dashboard.
+
+**[Optional] Run a webhook locally:**
 
 You can use the Stripe CLI to easily spin up a local webhook.
 
@@ -121,6 +153,14 @@ The CLI will print a webhook secret key to the console. Set `STRIPE_WEBHOOK_SECR
 You should see events logged in the console where the CLI is running.
 
 When you are ready to create a live webhook endpoint, follow our guide in the docs on [configuring a webhook endpoint in the dashboard](https://stripe.com/docs/webhooks/setup#configure-webhook-settings).
+
+**[Optional] Adjust other environment variables**
+
+The other environment variables are configurable:
+
+`STATIC_DIR` tells the server where to the client files are located and does not need to be modified unless you move the server files.
+
+`DOMAIN` is the domain of your website, where Checkout will redirect back to after the customer completes the payment on the Checkout page.
 
 ## FAQ
 
