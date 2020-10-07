@@ -1,3 +1,15 @@
+// If a fetch error occurs, log it to the console
+var handleFetchResult = function(result) {
+  if (!result.ok) {
+    return result.json().then(function(json) {
+      if (json.error && json.error.message) {
+        throw new Error(result.url + ' ' + result.status + ' ' + json.error.message);
+      }
+    });
+  }
+  return result.json();
+};
+
 // Create a Checkout Session with the selected plan ID
 var createCheckoutSession = function(priceId) {
   return fetch("/create-checkout-session", {
@@ -8,9 +20,7 @@ var createCheckoutSession = function(priceId) {
     body: JSON.stringify({
       priceId: priceId
     })
-  }).then(function(result) {
-    return result.json();
-  });
+  }).then(handleFetchResult);
 };
 
 // Handle any errors returned from Checkout
@@ -23,9 +33,7 @@ var handleResult = function(result) {
 
 /* Get your Stripe publishable key to initialize Stripe.js */
 fetch("/setup")
-  .then(function(result) {
-    return result.json();
-  })
+  .then(handleFetchResult)
   .then(function(json) {
     var publishableKey = json.publishableKey;
     var basicPriceId = json.basicPrice;
