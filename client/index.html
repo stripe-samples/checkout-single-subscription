@@ -14,52 +14,36 @@
   </head>
 
   <body>
+    <div class="togethere-background"></div>
     <div class="sr-root">
-      <div class="sr-main" style="display: flex;">
+      <div class="sr-main">
         <header class="sr-header">
           <div class="sr-header__logo"></div>
         </header>
-        <div class="sr-container">
-          <section class="container basic-photo">
-            <div>
-              <h1>Basic subscription</h1>
-              <h4>1 photo per month</h4>
-              <div class="pasha-image">
-                <img
-                  src="https://picsum.photos/280/320?random=4"
-                  width="140"
-                  height="160"
-                />
-              </div>
-            </div>
-            <button id="basic-plan-btn">$5.00 per month</button>
+        <h1>Choose a collaboration plan</h1>
+
+        <div class="price-table-container">
+          <section>
+            <img
+              src="/img/starter.png"
+              width="120"
+              height="120"
+            />
+            <div class="name">Starter</div>
+            <div class="price">$12</div>
+            <div class="duration">per month</div>
+            <button id="basic-plan-btn">Select</button>
           </section>
-          <section class="container pro-photo">
-            <div>
-              <h1>Pro subscription</h1>
-              <h4>3 photos per month</h4>
-              <div class="pasha-image-stack">
-                <img
-                  src="https://picsum.photos/280/320?random=1"
-                  width="105"
-                  height="120"
-                  alt="Sample Pasha image 1"
-                />
-                <img
-                  src="https://picsum.photos/280/320?random=2"
-                  width="105"
-                  height="120"
-                  alt="Sample Pasha image 2"
-                />
-                <img
-                  src="https://picsum.photos/280/320?random=3"
-                  width="105"
-                  height="120"
-                  alt="Sample Pasha image 3"
-                />
-              </div>
-            </div>
-            <button id="pro-plan-btn">$14.00 per month</button>
+          <section>
+            <img
+              src="/img/professional.png"
+              width="120"
+              height="120"
+            />
+            <div class="name">Professional</div>
+            <div class="price">$18</div>
+            <div class="duration">per month</div>
+            <button id="pro-plan-btn">Select</button>
           </section>
         </div>
         <div id="error-message"></div>
