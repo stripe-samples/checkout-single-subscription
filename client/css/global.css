@@ -17,8 +17,11 @@
 }
 
 /* Base */
-* {
+html {
   box-sizing: border-box;
+}
+* {
+  box-sizing: inherit;
 }
 body {
   background-color: var(--green-dark);
@@ -50,11 +53,13 @@ h4 {
 /* Layout */
 .sr-root {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-content: flex-start;
   width: 100%;
+  min-width: 320px;
   height: auto;
   min-height: 100vh;
-  justify-content: center;
+  padding: 48px 20px;
 }
 .sr-header {
   margin-top: 64px;
@@ -62,6 +67,7 @@ h4 {
 }
 .sr-payment-summary {
   margin-bottom: 20px;
+  text-align: center;
 }
 .sr-main,
 .sr-content {
@@ -70,12 +76,17 @@ h4 {
   justify-content: center;
   height: 100%;
 }
+.sr-main {
+  width: 100%;
+}
 .sr-content {
+  display: none;
   padding-left: 48px;
 }
 .sr-header__logo {
   background-image: var(--logo-image);
   height: 24px;
+  background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
   width: 100%;
@@ -183,8 +194,6 @@ input[type="number"]::placeholder {
   background-repeat: no-repeat, repeat;
   background-position: right 12px top 50%, 0 0;
   background-size: 0.65em auto, 100%;
-}
-.sr-select:after {
 }
 .sr-select::-ms-expand {
   display: none;
@@ -323,28 +332,27 @@ pre {
 }
 
 /* Responsiveness */
-@media (max-width: 720px) {
+@media (min-width: 720px) {
   .sr-root {
-    flex-direction: column;
-    justify-content: flex-start;
-    padding: 48px 20px;
-    min-width: 320px;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0;
   }
 
   .sr-header__logo {
-    background-position: center;
+    background-position: left top;
   }
 
   .sr-payment-summary {
-    text-align: center;
+    text-align: left;
   }
 
   .sr-content {
-    display: none;
+    display: block;
   }
 
   .sr-main {
-    width: 100%;
+    width: auto;
   }
 }
 
@@ -397,19 +405,22 @@ pre {
 }
 
 .price-table-container section:first-of-type {
-  border-radius: 6px 0px 0px 6px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
   border-right: 1px solid #efefef;
 }
 
 .price-table-container section:last-of-type {
-  border-radius: 0px 6px 6px 0px;
+  border-bottom-left-radius: 0px;
+  border-top-left-radius: 0px;
 }
 
 .price-table-container button {
   background-color: #F0F0F0;
   color: #000000;
   border-radius: 64px;
-  padding: 8px 16px;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .price-table-container button:hover {
