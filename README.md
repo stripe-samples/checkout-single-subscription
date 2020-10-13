@@ -106,7 +106,11 @@ Repeat these steps for to create a second product and price.
 
 Next, open `.env` in the folder of the server you want to use, and update the values for `BASIC_PRICE_ID` and  `PRO_PRICE_ID` with the price IDs of the two prices you added.
 
-**3. Follow the server instructions on how to run:**
+**3. Confirm that you have set the account name**
+
+In order to use Checkout, you must set an account or business name at https://dashboard.stripe.com/account
+
+**4. Follow the server instructions on how to run:**
 
 Pick the server language you want and follow the instructions in the server folder README on how to run.
 
