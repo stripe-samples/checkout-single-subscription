@@ -14,7 +14,7 @@ if (!$config) {
 $input = file_get_contents('php://input');
 $body = json_decode($input);
 
-// For demonstration, we using the Checkout session to retrieve the customer ID. 
+// For demonstration, we're using the Checkout session to retrieve the customer ID. 
 // Typically this is stored alongside the authenticated user in your database. 
 $checkout_session = \Stripe\Checkout\Session::retrieve($body->sessionId);
 $stripe_customer_id = $checkout_session->customer;
