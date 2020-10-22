@@ -15,10 +15,12 @@ import com.google.gson.annotations.SerializedName;
 
 import com.stripe.Stripe;
 import com.stripe.model.Event;
-import com.stripe.model.checkout.Session;
 import com.stripe.exception.*;
 import com.stripe.net.Webhook;
+import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
+import com.stripe.param.billingportal.Session CustomerPortalSession;
+import com.stripe.param.billingportal.SessionCreateParams CustomerPortalSessionCreateParams;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -35,11 +37,11 @@ public class Server {
     }
 
     static class CreateCustomerPortalSessionRequest {
-        @SerializedName("customerId")
-        String customerId;
+        @SerializedName("sessionId")
+        String sessionId;
 
-        public String getCustomerId() {
-            return customerId;
+        public String getSessionId() {
+            return sessionId;
         }
     }
 
@@ -118,14 +120,18 @@ public class Server {
 
         post("/customer-portal", (request, response) -> {
             response.type("application/json");
+            // For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
+            // Typically this is stored alongside the authenticated user in your database. 
             CreateCustomerPortalSessionRequest req = gson.fromJson(request.body(), CreateCustomerPortalSessionRequest.class);
+            Session session = Session.retrieve(sessionId);
+            String customer = session.getCustomer();
             String domainUrl = dotenv.get("DOMAIN");
 
-            com.stripe.param.billingportal.SessionCreateParams params = new com.stripe.param.billingportal.SessionCreateParams.Builder()
+            CustomerPortalSessionCreateParams params = new CustomerPortalSessionCreateParams.Builder()
                 .setReturnUrl(domainUrl)
-                .setCustomer(req.getCustomerId())
+                .setCustomer(customer)
                 .build();
-            com.stripe.model.billingportal.Session session = com.stripe.model.billingportal.Session.create(params);
+            CustomerPortalSession session = CustomerPortalSession.create(params);
             Map<String, Object> responseData = new HashMap<>();
             responseData.put("url", session.getUrl());
             return gson.toJson(responseData);

@@ -85,10 +85,11 @@ namespace server.Controllers
         [HttpPost("customer-portal")]
         public async Task<IActionResult> CustomerPortal([FromBody] CustomerPortalRequest req)
         {
-            // This ID is typically stored with the authenticated
-            // user in your database. For demonstration purposes, we're
-            // pulling this value from environment variables.
-            var stripeCustomerId = req.CustomerId;
+            // For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
+            // Typically this is stored alongside the authenticated user in your database.
+            var checkoutSessionId = req.SessionId;
+            var checkoutService = new SessionService(this.client);
+            var checkoutSession = await checkoutService.GetAsync(checkoutSessionId);
 
             // This is the URL to which your customer will return after
             // they are done managing billing in the Customer Portal.
@@ -96,7 +97,7 @@ namespace server.Controllers
 
             var options = new Stripe.BillingPortal.SessionCreateOptions
             {
-                Customer = stripeCustomerId,
+                Customer = checkoutSession.Customer,
                 ReturnUrl = returnUrl,
             };
             var service = new Stripe.BillingPortal.SessionService(this.client);
