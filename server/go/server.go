@@ -124,7 +124,7 @@ func handleCustomerPortal(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
-  // Typically this is stored alongside the authenticated user in your database. 
+	// Typically this is stored alongside the authenticated user in your database. 
 	sessionID := req.SessionID
 	s, _ := session.Get(sessionID, nil)
 
