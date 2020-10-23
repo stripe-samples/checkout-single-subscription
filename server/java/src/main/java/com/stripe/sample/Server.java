@@ -19,8 +19,6 @@ import com.stripe.exception.*;
 import com.stripe.net.Webhook;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
-import com.stripe.param.billingportal.Session CustomerPortalSession;
-import com.stripe.param.billingportal.SessionCreateParams CustomerPortalSessionCreateParams;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -123,17 +121,17 @@ public class Server {
             // For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
             // Typically this is stored alongside the authenticated user in your database. 
             CreateCustomerPortalSessionRequest req = gson.fromJson(request.body(), CreateCustomerPortalSessionRequest.class);
-            Session session = Session.retrieve(sessionId);
-            String customer = session.getCustomer();
+            Session checkoutsession = Session.retrieve(req.getSessionId());
+            String customer = checkoutsession.getCustomer();
             String domainUrl = dotenv.get("DOMAIN");
 
-            CustomerPortalSessionCreateParams params = new CustomerPortalSessionCreateParams.Builder()
+            com.stripe.param.billingportal.SessionCreateParams params = new com.stripe.param.billingportal.SessionCreateParams.Builder()
                 .setReturnUrl(domainUrl)
                 .setCustomer(customer)
                 .build();
-            CustomerPortalSession session = CustomerPortalSession.create(params);
+            com.stripe.model.billingportal.Session portalsession = com.stripe.model.billingportal.Session.create(params);
             Map<String, Object> responseData = new HashMap<>();
-            responseData.put("url", session.getUrl());
+            responseData.put("url", portalsession.getUrl());
             return gson.toJson(responseData);
         });
 

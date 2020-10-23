@@ -97,7 +97,7 @@ namespace server.Controllers
 
             var options = new Stripe.BillingPortal.SessionCreateOptions
             {
-                Customer = checkoutSession.Customer,
+                Customer = checkoutSession.CustomerId,
                 ReturnUrl = returnUrl,
             };
             var service = new Stripe.BillingPortal.SessionService(this.client);

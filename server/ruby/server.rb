@@ -82,7 +82,7 @@ post '/customer-portal' do
   return_url = ENV['DOMAIN']
 
   session = Stripe::BillingPortal::Session.create({
-    customer: checkout_session.customer,
+    customer: checkout_session['customer'],
     return_url: return_url
   })
 
