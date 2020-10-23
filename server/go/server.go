@@ -29,7 +29,7 @@ func main() {
 	http.HandleFunc("/checkout-session", handleCheckoutSession)
 	http.HandleFunc("/customer-portal", handleCustomerPortal)
 	http.HandleFunc("/webhook", handleWebhook)
-	addr := "localhost:4242"
+	addr := "0.0.0.0:4242"
 	log.Printf("Listening on %s ...", addr)
 	log.Fatal(http.ListenAndServe(addr, nil))
 }
@@ -123,8 +123,8 @@ func handleCustomerPortal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
-	// Typically this is stored alongside the authenticated user in your database. 
+	// For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
+	// Typically this is stored alongside the authenticated user in your database.
 	sessionID := req.SessionID
 	s, _ := session.Get(sessionID, nil)
 
