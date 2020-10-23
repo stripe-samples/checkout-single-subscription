@@ -72,25 +72,18 @@ post '/customer-portal' do
   content_type 'application/json'
   data = JSON.parse(request.body.read)
 
-  # This is the ID of the Stripe Customer. Typically it's stored in your database
-  # and retrieved alongside the authenticated user.
-  #
-  # For example, in Rails, you might use something like `current_user.stripe_customer_id`
-  #
-  # DANGER: In production, use the logged in user, not the
-  # customer ID passed from the client! Failing to change this
-  # will allow users to log into eachothers accounts! For
-  # demonstration without a database, we're using the ID of
-  # the customer passed from the client.
-  stripe_customer_id = data['customerId']
+  # For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
+  # Typically this is stored alongside the authenticated user in your database. 
+  checkout_session_id = data['sessionId']
+  checkout_session = Stripe::Checkout::Session.retrieve(checkout_session_id)
 
   # This is the URL to which users will be redirected after they are done
   # managing their billing.
   return_url = ENV['DOMAIN']
 
   session = Stripe::BillingPortal::Session.create({
-    customer: stripe_customer_id,
-    return_url: return_url,
+    customer: checkout_session['customer'],
+    return_url: return_url
   })
 
   {

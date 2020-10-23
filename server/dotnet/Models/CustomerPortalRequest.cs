@@ -2,6 +2,6 @@
 
 public class CustomerPortalRequest
 {
-    [JsonProperty("customerId")]
-    public string CustomerId { get; set; }
+    [JsonProperty("sessionId")]
+    public string SessionId { get; set; }
 }

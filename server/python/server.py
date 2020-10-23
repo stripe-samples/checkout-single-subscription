@@ -81,20 +81,17 @@ def create_checkout_session():
 @app.route('/customer-portal', methods=['POST'])
 def customer_portal():
     data = json.loads(request.data)
-    # This is the Stripe Customer ID. Typically, it's stored in your database
-    # and is retrieved alongside the authenticated user. For demonstration,
-    # we're storing in the environment variable.
-    # Note: The customer parameter is not strictly required for creating a
-    # Subscription with Checkout. If passed, the new Subscription will be associated
-    # with the existing Customer.
-    stripe_customer_id = data['customerId']
+    # For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
+    # Typically this is stored alongside the authenticated user in your database. 
+    checkout_session_id = data['sessionId']
+    checkout_session = stripe.checkout.Session.retrieve(checkout_session_id)
 
     # This is the URL to which the customer will be redirected after they are
     # done managing their billing with the portal.
     return_url = os.getenv("DOMAIN")
 
     session = stripe.billing_portal.Session.create(
-        customer=stripe_customer_id,
+        customer=checkout_session.customer,
         return_url=return_url)
     return jsonify({'url': session.url})
 

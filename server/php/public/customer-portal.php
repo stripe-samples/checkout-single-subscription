@@ -14,10 +14,10 @@ if (!$config) {
 $input = file_get_contents('php://input');
 $body = json_decode($input);
 
-// This is the ID of the Stripe Customer. Typically this is stored alongside
-// the authenticated user in your database. For demonstration, we're using the
-// config.
-$stripe_customer_id = $body->customerId;
+// For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
+// Typically this is stored alongside the authenticated user in your database. 
+$checkout_session = \Stripe\Checkout\Session::retrieve($body->sessionId);
+$stripe_customer_id = $checkout_session->customer;
 
 // This is the URL to which users are redirected after managing their billing
 // with the customer portal.

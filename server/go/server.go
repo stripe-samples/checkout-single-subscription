@@ -115,7 +115,7 @@ func handleCustomerPortal(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		CustomerID string `json:"customerId"`
+		SessionID string `json:"sessionId"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -123,26 +123,25 @@ func handleCustomerPortal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// This is the ID of the Stripe Customer and is typically stored in your
-	// database and would be retrieved along with the currently authenticated
-	// user. For demonstration, we're storing this value in the environment
-	// variables.
-	stripeCustomerID := req.CustomerID
+	// For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
+	// Typically this is stored alongside the authenticated user in your database. 
+	sessionID := req.SessionID
+	s, _ := session.Get(sessionID, nil)
 
 	// The URL to which the user is redirected when they are done managing
 	// billing in the portal.
 	returnURL := os.Getenv("DOMAIN")
 
 	params := &stripe.BillingPortalSessionParams{
-		Customer:  stripe.String(stripeCustomerID),
+		Customer:  stripe.String(s.Customer.ID),
 		ReturnURL: stripe.String(returnURL),
 	}
-	s, _ := portalsession.New(params)
+	ps, _ := portalsession.New(params)
 
 	writeJSON(w, struct {
 		URL string `json:"url"`
 	}{
-		URL: s.URL,
+		URL: ps.URL,
 	})
 }
 

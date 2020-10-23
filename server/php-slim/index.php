@@ -85,10 +85,10 @@ $app->post('/create-checkout-session', function(Request $request, Response $resp
 
 $app->post('/customer-portal', function(Request $request, Response $response) {
   $body = json_decode($request->getBody());
-  // This is the ID of the Stripe Customer. Typically this is stored in your
-  // database and retrieved alongside the authenticated customer. For demonstration
-  // purposes we have stored this value in the environment variables.
-  $stripe_customer_id = $body->customerId;
+  // For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
+  // Typically this is stored alongside the authenticated user in your database. 
+  $checkout_session = \Stripe\Checkout\Session::retrieve($body->sessionId);
+  $stripe_customer_id = $checkout_session->customer;
 
   // This is the URL to which the user will be redirected after they have
   // finished managing their billing in the portal.
