@@ -24,9 +24,9 @@ if (sessionId) {
       console.log('Error when fetching Checkout session', err);
     });
 
-  // In production, this should check CSRF, and not pass the customer ID.
-  // the customer ID should be pulled from the authenticated user on the
-  // server.
+  // In production, this should check CSRF, and not pass the session ID.
+  // The customer ID for the portal should be pulled from the 
+  // authenticated user on the server.
   const manageBillingForm = document.querySelector('#manage-billing-form');
   manageBillingForm.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -36,7 +36,7 @@ if (sessionId) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        customerId: customerId
+        sessionId: sessionId
       }),
     })
       .then((response) => response.json())
