@@ -1,5 +1,4 @@
-
-Run with
+## Run with
 
 ```sh
 dotnet run Program.cs
