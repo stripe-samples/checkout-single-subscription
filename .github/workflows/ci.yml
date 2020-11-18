@@ -1,0 +1,55 @@
+name: CI for stripe-samples/checkout-single-subscription
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # repository: 'stripe-samples/checkout-single-subscription'
+          repository: 'hibariya/checkout-single-subscription'
+          ref: 'ci'
+
+      - uses: actions/checkout@v2
+        with:
+          repository: 'stripe-samples/sample-ci'
+          path: 'sample-ci'
+          ref: 'ci'
+
+      - name: Install gettext for envsubst
+        run: |
+          sudo apt install gettext-base
+
+      - name: Install jq
+        run: |
+          sudo curl -o /usr/bin/jq -L https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+          sudo chmod +x /usr/bin/jq
+
+      - name: Run tests
+        run: |
+          source sample-ci/helpers.sh
+
+          install_docker_compose_settings
+          export STRIPE_WEBHOOK_SECRET=$(retrieve_webhook_secret)
+          cat <<EOF >> .env
+          DOMAIN=http://web:4242
+          BASIC_PRICE_ID=${BASIC}
+          PRO_PRICE_ID=${PREMIUM}
+          EOF
+
+          for lang in $(cat .cli.json | server_langs_for_integration main)
+          do
+            [ "$lang" = "php" ] && continue
+
+            configure_docker_compose_for_integration . "$lang" ../../client \
+                                                     target/single-subscription-checkout-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+
+            docker-compose up -d && wait_web_server
+            docker-compose exec -T runner bundle exec rspec spec/server_spec.rb
+          done
+        env:
+          STRIPE_PUBLISHABLE_KEY: ${{ secrets.TEST_STRIPE_PUBLISHABLE_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.TEST_STRIPE_SECRET_KEY }}
+          PREMIUM: price_1HXyXwCWW2eVYDoPnnTQ02VO
+          BASIC: price_1HXyVBCWW2eVYDoPtXcEdXfw
