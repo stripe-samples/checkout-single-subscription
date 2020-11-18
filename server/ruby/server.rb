@@ -1,7 +1,6 @@
 require 'stripe'
 require 'sinatra'
 require 'dotenv'
-require 'byebug'
 
 # Copy the .env.example in the root into a .env file in this folder
 

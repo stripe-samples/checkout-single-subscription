@@ -1,4 +1,3 @@
-require './spec_helper.rb'
 require 'dotenv'
 Dotenv.load
 
