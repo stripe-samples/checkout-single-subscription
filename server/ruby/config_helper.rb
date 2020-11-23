@@ -20,26 +20,34 @@ class ConfigHelper
 
     # Confirms the required environment variables have
     # been configured.
-    valid = helper.dotenv_exists?
+    bail if !helper.dotenv_exists?
 
     # Confirms API keys are set and have the expected
     # prefixes.
-    valid &= helper.valid_api_keys?
-
-    exit if !valid
+    bail if !helper.valid_api_keys?
 
     # Once we've done basic key validation, we can set the API
     # key and make deeper assumptions.
     Stripe.api_key = ENV['STRIPE_SECRET_KEY']
 
-    exit if !helper.valid_paths?
-    exit if !helper.valid_domain?
+    bail if !helper.valid_paths?
+    bail if !helper.valid_domain?
+    bail if !helper.valid_prices?
+  end
 
-    exit if !helper.valid_prices?
+  def self.bail
+    puts ""
+    puts "Please restart the server and try again."
+    exit
   end
 
   def initialize(*args)
     @vars = Dotenv.parse(*args)
+  end
+
+  def set_dotenv!(key, value)
+    @vars[key] = value
+    write_dotenv!
   end
 
   def write_dotenv!
@@ -85,17 +93,11 @@ class ConfigHelper
         )
         puts <<~DOC
           Price created!
-
           #{stripe_price.to_json}
-
-          Update `.env` with:
-
-          #{price_id}=#{stripe_price.id}
         DOC
+        set_dotenv!(price_id, stripe_price.id)
       end
       return false
-    else
-
     end
     true
   end
@@ -216,8 +218,8 @@ class ConfigHelper
       end
     end
 
-    key = ENV['STRIPE_WEBHOOK_SECRET']
-    if key.nil? || !key.start_with?('whsec_')
+    whsec = ENV['STRIPE_WEBHOOK_SECRET']
+    if whsec.nil? || !whsec.start_with?('whsec_')
       puts <<~DOC
         Your webhook signing secret (STRIPE_WEBHOOK_SECRET) is configured
         incorrectly or doesn't match the expected format. You can find your webhook
@@ -252,10 +254,8 @@ class ConfigHelper
           puts "#{v}="
         end
       else
-        @vars['DOMAIN'] = 'http://localhost:4242'
-        write_dotenv!
+        set_dotenv!('DOMAIN', 'http://localhost:4242')
         puts ""
-        return true
       end
     end
 
