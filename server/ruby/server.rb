@@ -1,10 +1,11 @@
 require 'stripe'
 require 'sinatra'
 require 'dotenv'
+require './config_helper.rb'
 
 # Copy the .env.example in the root into a .env file in this folder
-
 Dotenv.load
+ConfigHelper.check_env!
 Stripe.api_key = ENV['STRIPE_SECRET_KEY']
 
 set :static, true
@@ -71,8 +72,8 @@ post '/customer-portal' do
   content_type 'application/json'
   data = JSON.parse(request.body.read)
 
-  # For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
-  # Typically this is stored alongside the authenticated user in your database. 
+  # For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
+  # Typically this is stored alongside the authenticated user in your database.
   checkout_session_id = data['sessionId']
   checkout_session = Stripe::Checkout::Session.retrieve(checkout_session_id)
 
