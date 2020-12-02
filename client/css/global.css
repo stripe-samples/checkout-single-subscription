@@ -450,6 +450,19 @@ pre {
   text-align: center;
 }
 
+.error-message {
+  background-color: #000;
+  color: #fff;
+  display: none;
+  font-weight: bold;
+  left: 0;
+  padding: 10px;
+  position: fixed;
+  text-align: center;
+  top: 0;
+  width: 100%;
+}
+
 .completed-view-section {
   background-color: white;
   border-radius: 16px;
