@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"io/ioutil"
 	"log"
@@ -47,7 +48,7 @@ func handleSetup(w http.ResponseWriter, r *http.Request) {
 		PublishableKey: os.Getenv("STRIPE_PUBLISHABLE_KEY"),
 		BasicPrice:     os.Getenv("BASIC_PRICE_ID"),
 		ProPrice:       os.Getenv("PRO_PRICE_ID"),
-	})
+	}, nil)
 }
 
 func handleCreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
@@ -60,7 +61,7 @@ func handleCreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		Price string `json:"priceId"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeJSON(w, nil, err)
 		log.Printf("json.NewDecoder.Decode: %v", err)
 		return
 	}
@@ -73,7 +74,7 @@ func handleCreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		}),
 		Mode: stripe.String(string(stripe.CheckoutSessionModeSubscription)),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
-			&stripe.CheckoutSessionLineItemParams{
+			{
 				Price:    stripe.String(req.Price),
 				Quantity: stripe.Int64(1),
 			},
@@ -82,12 +83,7 @@ func handleCreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 
 	s, err := session.New(params)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		writeJSON(w, struct {
-			ErrorData string `json:"error"`
-		}{
-			ErrorData: "test",
-		})
+		writeJSON(w, nil, err)
 		return
 	}
 
@@ -95,7 +91,7 @@ func handleCreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		SessionID string `json:"sessionId"`
 	}{
 		SessionID: s.ID,
-	})
+	}, nil)
 }
 
 func handleCheckoutSession(w http.ResponseWriter, r *http.Request) {
@@ -104,8 +100,8 @@ func handleCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sessionID := r.URL.Query().Get("sessionId")
-	s, _ := session.Get(sessionID, nil)
-	writeJSON(w, s)
+	s, err := session.Get(sessionID, nil)
+	writeJSON(w, s, err)
 }
 
 func handleCustomerPortal(w http.ResponseWriter, r *http.Request) {
@@ -118,7 +114,7 @@ func handleCustomerPortal(w http.ResponseWriter, r *http.Request) {
 		SessionID string `json:"sessionId"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeJSON(w, nil, err)
 		log.Printf("json.NewDecoder.Decode: %v", err)
 		return
 	}
@@ -126,7 +122,11 @@ func handleCustomerPortal(w http.ResponseWriter, r *http.Request) {
 	// For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
 	// Typically this is stored alongside the authenticated user in your database.
 	sessionID := req.SessionID
-	s, _ := session.Get(sessionID, nil)
+	s, err := session.Get(sessionID, nil)
+	if err != nil {
+		writeJSON(w, nil, err)
+		return
+	}
 
 	// The URL to which the user is redirected when they are done managing
 	// billing in the portal.
@@ -142,7 +142,7 @@ func handleCustomerPortal(w http.ResponseWriter, r *http.Request) {
 		URL string `json:"url"`
 	}{
 		URL: ps.URL,
-	})
+	}, nil)
 }
 
 func handleWebhook(w http.ResponseWriter, r *http.Request) {
@@ -169,9 +169,30 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func writeJSON(w http.ResponseWriter, v interface{}) {
+type errResp struct {
+	Error struct {
+		Message string `json:"message"`
+	} `json:"error"`
+}
+
+func writeJSON(w http.ResponseWriter, v interface{}, err error) {
+	var respVal interface{}
+	if err != nil {
+		msg := err.Error()
+		var serr *stripe.Error
+		if errors.As(err, &serr) {
+			msg = serr.Msg
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		var e errResp
+		e.Error.Message = msg
+		respVal = e
+	} else {
+		respVal = v
+	}
+
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(v); err != nil {
+	if err := json.NewEncoder(&buf).Encode(respVal); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Printf("json.NewEncoder.Encode: %v", err)
 		return
