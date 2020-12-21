@@ -89,7 +89,7 @@ app.post('/customer-portal', async (req, res) => {
   const checkoutsession = await stripe.checkout.sessions.retrieve(sessionId);
 
   // This is the url to which the customer will be redirected when they are done
-  // managign their billing with the portal.
+  // managing their billing with the portal.
   const returnUrl = process.env.DOMAIN;
 
   const portalsession = await stripe.billingPortal.sessions.create({
