@@ -68,7 +68,7 @@ func handleCreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 
 	params := &stripe.CheckoutSessionParams{
 		SuccessURL: stripe.String(os.Getenv("DOMAIN") + "/success.html?session_id={CHECKOUT_SESSION_ID}"),
-		CancelURL:  stripe.String(os.Getenv("DOMAIN") + "/cancel.html"),
+		CancelURL:  stripe.String(os.Getenv("DOMAIN") + "/canceled.html"),
 		PaymentMethodTypes: stripe.StringSlice([]string{
 			"card",
 		}),

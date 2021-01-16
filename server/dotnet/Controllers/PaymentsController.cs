@@ -37,7 +37,7 @@ namespace server.Controllers
             var options = new SessionCreateOptions
             {
                 SuccessUrl = $"{this.options.Value.Domain}/success.html?session_id={{CHECKOUT_SESSION_ID}}",
-                CancelUrl = $"{this.options.Value.Domain}/cancel.html",
+                CancelUrl = $"{this.options.Value.Domain}/canceled.html",
                 PaymentMethodTypes = new List<string>
                 {
                     "card",
