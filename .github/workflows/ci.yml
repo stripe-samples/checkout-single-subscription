@@ -1,5 +1,5 @@
 name: CI for stripe-samples/checkout-single-subscription
-on: [push, pull_request]
+on: [push]
 
 jobs:
   test:
