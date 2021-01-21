@@ -6,8 +6,6 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-        with:
-          repository: 'stripe-samples/checkout-single-subscription'
 
       - uses: actions/checkout@v2
         with:
@@ -39,9 +37,7 @@ jobs:
           do
             [ "$lang" = "php" ] && continue
 
-            configure_docker_compose_for_integration . "$lang" ../../client \
-                                                     target/single-subscription-checkout-1.0.0-SNAPSHOT-jar-with-dependencies.jar
-
+            configure_docker_compose_for_integration . "$lang" ../../client
             docker-compose up -d && wait_web_server
             docker-compose exec -T runner bundle exec rspec spec/server_spec.rb
           done
