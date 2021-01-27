@@ -1,5 +1,8 @@
 name: CI for stripe-samples/checkout-single-subscription
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   test:
