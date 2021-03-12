@@ -1,12 +1,27 @@
 {
-    "name": "checkout-single-subscription",
-    "configureDotEnv": true,
-    "integrations": [
-      {
-        "name": "main",
-        "clients": ["web"],
-        "servers": ["java", "node", "php-slim", "php", "python", "ruby", "dotnet", "go"]
-      }
-    ]
-  }
-
+  "name": "checkout-single-subscription",
+  "configureDotEnv": true,
+  "requiredResources": [
+    "price_one_time",
+    "price_recurring_basic",
+    "price_recurring_premium"
+  ],
+  "integrations": [
+    {
+      "name": "main",
+      "clients": [
+        "web"
+      ],
+      "servers": [
+        "java",
+        "node",
+        "php-slim",
+        "php",
+        "python",
+        "ruby",
+        "dotnet",
+        "go"
+      ]
+    }
+  ]
+}
