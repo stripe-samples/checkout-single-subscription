@@ -2,9 +2,9 @@
   "name": "checkout-single-subscription",
   "configureDotEnv": true,
   "requiredResources": [
-    "price_one_time",
-    "price_recurring_basic",
-    "price_recurring_premium"
+    "stripe_samples_price_one_time",
+    "stripe_samples_price_recurring_basic",
+    "stripe_samples_price_recurring_premium"
   ],
   "integrations": [
     {
