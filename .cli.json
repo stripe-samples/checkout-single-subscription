@@ -2,9 +2,14 @@
   "name": "checkout-single-subscription",
   "configureDotEnv": true,
   "requiredResources": [
-    "stripe_samples_price_one_time_id",
-    "stripe_samples_price_recurring_basic_id",
-    "stripe_samples_price_recurring_premium_id"
+    {
+      "name": "stripe_samples_price_recurring_basic_id",
+      "envVar": "BASIC_PRICE_ID"
+    },
+    {
+      "name": "stripe_samples_price_recurring_pro_id",
+      "envVar": "PRO_PRICE_ID"
+    }
   ],
   "integrations": [
     {
