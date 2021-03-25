@@ -16,18 +16,18 @@ RSpec.describe 'server APIs' do
     resp, status = post_json('/create-checkout-session', {
       priceId: ''
     })
-    expect(status).to eq(400)
+    expect(status).to eq(400), resp.to_s
     expect(resp).to have_key('error')
 
     # With valid price
     resp, status = post_json('/create-checkout-session', {
       priceId: config['basicPrice']
     })
-    expect(status).to eq(200)
+    expect(status).to eq(200), resp.to_s
     expect(resp).to have_key('sessionId')
 
     resp2 = get_json("/checkout-session?sessionId=#{resp['sessionId']}")
-    expect(status).to eq(200)
+    expect(status).to eq(200), resp2.to_s
     expect(resp2).to have_key('id')
     expect(resp2['id']).to eq(resp['sessionId'])
 
@@ -52,7 +52,7 @@ RSpec.describe 'server APIs' do
     resp, status = post_json('/customer-portal', {
       sessionId: session_with_customer['id'],
     })
-    expect(status).to eq(200)
+    expect(status).to eq(200), resp.to_s
     expect(resp).to have_key('url')
   end
 end
