@@ -104,6 +104,7 @@ app.post('/customer-portal', async (req, res) => {
 
 // Webhook handler for asynchronous events.
 app.post("/webhook", async (req, res) => {
+  let data;
   let eventType;
   // Check if webhook signing is configured.
   if (process.env.STRIPE_WEBHOOK_SECRET) {
