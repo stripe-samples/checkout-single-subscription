@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Stripe Checkout Sample</title>
-    <meta name="description" content="A demo of Stripe Payment Intents" />
+    <title>YourBase Subscription</title>
+    <meta name="description" content="YourBase Subscription" />
 
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="css/normalize.css" />
@@ -17,23 +17,16 @@
     <div class="sr-root">
       <div class="sr-main">
         <header class="sr-header">
-          <div class="sr-header__logo"></div>
+          <div class="sr-header__logo_OFF"></div>
         </header>
         <div class="sr-payment-summary completed-view">
-            <h1>Your payment succeeded</h1>
-            <h4>
-              View CheckoutSession response:
-            </h4>
-          </div>
-          <div class="completed-view-section">
+            <h1>Your subscription setup succeeded</h1>
+          <div class="completed-view-section" style="display: none">
             <pre>
 
             </pre>
-            <button onclick="window.location.href = '/';">Restart demo</button>
-
-            <form id="manage-billing-form">
-              <button>Manage Billing</button>
-            </form>
+            <button onclick="window.location.href = 'https://app.yourbase.io';">Go to the Dashboard</button>
+	    <form id="manage-billing-form"><button></button></form>
           </div>
         </div>
         <div class="sr-content">
