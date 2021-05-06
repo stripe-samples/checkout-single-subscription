@@ -24,6 +24,12 @@ $container['logger'] = function ($c) {
 
 $app->add(function ($request, $response, $next) {
     Stripe::setApiKey(getenv('STRIPE_SECRET_KEY'));
+    Stripe::setAppInfo(
+      "stripe-samples/checkout-single-subscription",
+      "0.0.1",
+      "https://github.com/stripe-samples/checkout-single-subscription"
+    );
+
     return $next($request, $response);
 });
 
@@ -85,8 +91,8 @@ $app->post('/create-checkout-session', function(Request $request, Response $resp
 
 $app->post('/customer-portal', function(Request $request, Response $response) {
   $body = json_decode($request->getBody());
-  // For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
-  // Typically this is stored alongside the authenticated user in your database. 
+  // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
+  // Typically this is stored alongside the authenticated user in your database.
   $checkout_session = \Stripe\Checkout\Session::retrieve($body->sessionId);
   $stripe_customer_id = $checkout_session->customer;
 

@@ -15,8 +15,14 @@ from dotenv import load_dotenv, find_dotenv
 
 # Setup Stripe python client library
 load_dotenv(find_dotenv())
+# For sample support and debugging, not required for production:
+stripe.set_app_info(
+    'stripe-samples/checkout-single-subscription',
+    version='0.0.1',
+    url='https://github.com/stripe-samples/checkout-single-subscription')
+
+stripe.api_version = '2020-08-27'
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
-stripe.api_version = os.getenv('STRIPE_API_VERSION')
 
 static_dir = str(os.path.abspath(os.path.join(
     __file__, "..", os.getenv("STATIC_DIR"))))
@@ -81,8 +87,8 @@ def create_checkout_session():
 @app.route('/customer-portal', methods=['POST'])
 def customer_portal():
     data = json.loads(request.data)
-    # For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
-    # Typically this is stored alongside the authenticated user in your database. 
+    # For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
+    # Typically this is stored alongside the authenticated user in your database.
     checkout_session_id = data['sessionId']
     checkout_session = stripe.checkout.Session.retrieve(checkout_session_id)
 

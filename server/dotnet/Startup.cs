@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
+using Stripe;
 
 namespace server
 {
@@ -24,6 +25,13 @@ namespace server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            StripeConfiguration.AppInfo = new AppInfo
+            {
+                Name = "stripe-samples/checkout-single-subscription",
+                Url = "https://github.com/stripe-samples/checkout-single-subscription",
+                Version = "0.0.1",
+            };
+
             services.Configure<StripeOptions>(options =>
             {
                 options.PublishableKey = Environment.GetEnvironmentVariable("STRIPE_PUBLISHABLE_KEY");

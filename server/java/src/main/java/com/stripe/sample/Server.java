@@ -49,6 +49,13 @@ public class Server {
         Dotenv dotenv = Dotenv.load();
 
         Stripe.apiKey = dotenv.get("STRIPE_SECRET_KEY");
+        // For sample support and debugging, not required for production:
+        Stripe.setAppInfo(
+            "stripe-samples/checkout-single-subscription",
+            "0.0.1",
+            "https://github.com/stripe-samples/checkout-single-subscription"
+        );
+
 
         staticFiles.externalLocation(
                 Paths.get(Paths.get("").toAbsolutePath().toString(), dotenv.get("STATIC_DIR")).normalize().toString());
@@ -118,8 +125,8 @@ public class Server {
 
         post("/customer-portal", (request, response) -> {
             response.type("application/json");
-            // For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
-            // Typically this is stored alongside the authenticated user in your database. 
+            // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
+            // Typically this is stored alongside the authenticated user in your database.
             CreateCustomerPortalSessionRequest req = gson.fromJson(request.body(), CreateCustomerPortalSessionRequest.class);
             Session checkoutsession = Session.retrieve(req.getSessionId());
             String customer = checkoutsession.getCustomer();

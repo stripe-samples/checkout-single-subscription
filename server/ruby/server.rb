@@ -6,6 +6,14 @@ require './config_helper.rb'
 # Copy the .env.example in the root into a .env file in this folder
 Dotenv.load
 ConfigHelper.check_env!
+
+# For sample support and debugging, not required for production:
+Stripe.set_app_info(
+  'stripe-samples/checkout-single-subscription',
+  version: '0.0.1',
+  url: 'https://github.com/stripe-samples/checkout-single-subscription'
+)
+Stripe.api_version = '2020-08-27'
 Stripe.api_key = ENV['STRIPE_SECRET_KEY']
 
 set :static, true

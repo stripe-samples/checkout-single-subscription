@@ -9,7 +9,14 @@ if (env.error) {
   throw new Error(`Unable to load the .env file from ${envFilePath}. Please copy .env.example to ${envFilePath}`);
 }
 
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: '2020-08-27',
+  appInfo: { // For sample support and debugging, not required for production:
+    name: "stripe-samples/checkout-single-subscription",
+    version: "0.0.1",
+    url: "https://github.com/stripe-samples/checkout-single-subscription"
+  }
+});
 
 app.use(express.static(process.env.STATIC_DIR));
 app.use(
@@ -83,7 +90,7 @@ app.get("/setup", (req, res) => {
 });
 
 app.post('/customer-portal', async (req, res) => {
-  // For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
+  // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
   // Typically this is stored alongside the authenticated user in your database.
   const { sessionId } = req.body;
   const checkoutsession = await stripe.checkout.sessions.retrieve(sessionId);

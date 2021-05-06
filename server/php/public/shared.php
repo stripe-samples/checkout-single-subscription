@@ -13,11 +13,17 @@ if (!$config) {
 	exit;
 }
 
+\Stripe\Stripe::setAppInfo(
+  "stripe-samples/checkout-single-subscription",
+  "0.0.1",
+  "https://github.com/stripe-samples/checkout-single-subscription"
+);
+
 \Stripe\Stripe::setApiKey($config['stripe_secret_key']);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$input = file_get_contents('php://input');
-	$body = json_decode($input);	
+	$body = json_decode($input);
 }
 
 if (json_last_error() !== JSON_ERROR_NONE) {
