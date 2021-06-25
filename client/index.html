@@ -24,26 +24,32 @@
 
         <div class="price-table-container">
           <section>
-            <img
-              src="/img/starter.png"
-              width="120"
-              height="120"
-            />
-            <div class="name">Starter</div>
-            <div class="price">$12</div>
-            <div class="duration">per month</div>
-            <button id="basic-plan-btn">Select</button>
+            <form action="/create-checkout-session" method="POST">
+              <input type="hidden" id="basicPrice" name="priceId">
+              <img
+                src="/img/starter.png"
+                width="120"
+                height="120"
+                />
+              <div class="name">Starter</div>
+              <div class="price">$12</div>
+              <div class="duration">per month</div>
+              <button id="basic-plan-btn">Select</button>
+            </form>
           </section>
           <section>
-            <img
-              src="/img/professional.png"
-              width="120"
-              height="120"
-            />
-            <div class="name">Professional</div>
-            <div class="price">$18</div>
-            <div class="duration">per month</div>
-            <button id="pro-plan-btn">Select</button>
+            <form action="/create-checkout-session" method="POST">
+              <input type="hidden" id="proPrice" name="priceId">
+              <img
+                src="/img/professional.png"
+                width="120"
+                height="120"
+                />
+              <div class="name">Professional</div>
+              <div class="price">$18</div>
+              <div class="duration">per month</div>
+              <button id="pro-plan-btn">Select</button>
+            </form>
           </section>
         </div>
       </div>

@@ -19,6 +19,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
 });
 
 app.use(express.static(process.env.STATIC_DIR));
+app.use(express.urlencoded());
 app.use(
   express.json({
     // We need the raw body to verify webhook signatures.
@@ -68,9 +69,7 @@ app.post("/create-checkout-session", async (req, res) => {
       cancel_url: `${domainURL}/canceled.html`,
     });
 
-    res.send({
-      sessionId: session.id,
-    });
+    return res.redirect(303, session.url);
   } catch (e) {
     res.status(400);
     return res.send({
@@ -81,7 +80,7 @@ app.post("/create-checkout-session", async (req, res) => {
   }
 });
 
-app.get("/setup", (req, res) => {
+app.get("/config", (req, res) => {
   res.send({
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
     basicPrice: process.env.BASIC_PRICE_ID,

@@ -11,10 +11,10 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/stripe/stripe-go/v71"
-	portalsession "github.com/stripe/stripe-go/v71/billingportal/session"
-	"github.com/stripe/stripe-go/v71/checkout/session"
-	"github.com/stripe/stripe-go/v71/webhook"
+	"github.com/stripe/stripe-go/v72"
+	portalsession "github.com/stripe/stripe-go/v72/billingportal/session"
+	"github.com/stripe/stripe-go/v72/checkout/session"
+	"github.com/stripe/stripe-go/v72/webhook"
 )
 
 func main() {
@@ -31,7 +31,7 @@ func main() {
 	})
 
 	http.Handle("/", http.FileServer(http.Dir(os.Getenv("STATIC_DIR"))))
-	http.HandleFunc("/setup", handleSetup)
+	http.HandleFunc("/config", handleConfig)
 	http.HandleFunc("/create-checkout-session", handleCreateCheckoutSession)
 	http.HandleFunc("/checkout-session", handleCheckoutSession)
 	http.HandleFunc("/customer-portal", handleCustomerPortal)
@@ -41,7 +41,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(addr, nil))
 }
 
-func handleSetup(w http.ResponseWriter, r *http.Request) {
+func handleConfig(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
@@ -62,16 +62,8 @@ func handleCreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
 	}
-
-	var req struct {
-		Price string `json:"priceId"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, nil, err)
-		log.Printf("json.NewDecoder.Decode: %v", err)
-		return
-	}
-
+	r.ParseForm()
+	priceId := r.PostFormValue("priceId")
 	params := &stripe.CheckoutSessionParams{
 		SuccessURL: stripe.String(os.Getenv("DOMAIN") + "/success.html?session_id={CHECKOUT_SESSION_ID}"),
 		CancelURL:  stripe.String(os.Getenv("DOMAIN") + "/canceled.html"),
@@ -81,7 +73,7 @@ func handleCreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		Mode: stripe.String(string(stripe.CheckoutSessionModeSubscription)),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
-				Price:    stripe.String(req.Price),
+				Price:    stripe.String(priceId),
 				Quantity: stripe.Int64(1),
 			},
 		},
@@ -92,12 +84,7 @@ func handleCreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, nil, err)
 		return
 	}
-
-	writeJSON(w, struct {
-		SessionID string `json:"sessionId"`
-	}{
-		SessionID: s.ID,
-	}, nil)
+	http.Redirect(w, r, s.URL, http.StatusSeeOther)
 }
 
 func handleCheckoutSession(w http.ResponseWriter, r *http.Request) {
