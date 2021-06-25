@@ -35,7 +35,7 @@ def get_example():
     return render_template('index.html')
 
 
-@app.route('/setup', methods=['GET'])
+@app.route('/config', methods=['GET'])
 def get_publishable_key():
     return jsonify({
         'publishableKey': os.getenv('STRIPE_PUBLISHABLE_KEY'),
@@ -54,7 +54,7 @@ def get_checkout_session():
 
 @app.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
-    data = json.loads(request.data)
+    price = request.form.get('priceId')
     domain_url = os.getenv('DOMAIN')
 
     try:
@@ -67,19 +67,16 @@ def create_checkout_session():
 
         # ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
         checkout_session = stripe.checkout.Session.create(
-            success_url=domain_url +
-            "/success.html?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url=domain_url + "/canceled.html",
-            payment_method_types=["card"],
-            mode="subscription",
-            line_items=[
-                {
-                    "price": data['priceId'],
-                    "quantity": 1
-                }
-            ],
+            success_url=domain_url + '/success.html?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url=domain_url + '/canceled.html',
+            payment_method_types=['card'],
+            mode='subscription',
+            line_items=[{
+                'price': price,
+                'quantity': 1
+            }],
         )
-        return jsonify({'sessionId': checkout_session['id']})
+        return redirect(checkout_session.url, code=303)
     except Exception as e:
         return jsonify({'error': {'message': str(e)}}), 400
 

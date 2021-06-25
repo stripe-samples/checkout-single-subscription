@@ -20,10 +20,10 @@ namespace server.Controllers
             this.client = new StripeClient(this.options.Value.SecretKey);
         }
 
-        [HttpGet("setup")]
-        public SetupResponse Setup()
+        [HttpGet("config")]
+        public ConfigResponse Setup()
         {
-            return new SetupResponse
+            return new ConfigResponse
             {
                 ProPrice = this.options.Value.ProPrice,
                 BasicPrice = this.options.Value.BasicPrice,
@@ -32,7 +32,7 @@ namespace server.Controllers
         }
 
         [HttpPost("create-checkout-session")]
-        public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateCheckoutSessionRequest req)
+        public async Task<IActionResult> CreateCheckoutSession()
         {
             var options = new SessionCreateOptions
             {
@@ -47,7 +47,7 @@ namespace server.Controllers
                 {
                     new SessionLineItemOptions
                     {
-                        Price = req.PriceId,
+                        Price = Request.Form["priceId"],
                         Quantity = 1,
                     },
                 },
@@ -56,10 +56,8 @@ namespace server.Controllers
             try
             {
                 var session = await service.CreateAsync(options);
-                return Ok(new CreateCheckoutSessionResponse
-                {
-                    SessionId = session.Id,
-                });
+                Response.Headers.Add("Location", session.Url);
+                return new StatusCodeResult(303);
             }
             catch (StripeException e)
             {

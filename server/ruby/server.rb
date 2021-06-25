@@ -10,7 +10,7 @@ ConfigHelper.check_env!
 # For sample support and debugging, not required for production:
 Stripe.set_app_info(
   'stripe-samples/checkout-single-subscription',
-  version: '0.0.1',
+  version: '0.0.2',
   url: 'https://github.com/stripe-samples/checkout-single-subscription'
 )
 Stripe.api_version = '2020-08-27'
@@ -25,6 +25,15 @@ get '/' do
   send_file File.join(settings.public_folder, 'index.html')
 end
 
+get '/config' do
+  content_type 'application/json'
+  {
+    publishableKey: ENV['STRIPE_PUBLISHABLE_KEY'],
+    basicPrice: ENV['BASIC_PRICE_ID'],
+    proPrice: ENV['PRO_PRICE_ID']
+  }.to_json
+end
+
 # Fetch the Checkout Session to display the JSON result on the success page
 get '/checkout-session' do
   content_type 'application/json'
@@ -34,19 +43,7 @@ get '/checkout-session' do
   session.to_json
 end
 
-get '/setup' do
-  content_type 'application/json'
-  {
-    publishableKey: ENV['STRIPE_PUBLISHABLE_KEY'],
-    basicPrice: ENV['BASIC_PRICE_ID'],
-    proPrice: ENV['PRO_PRICE_ID']
-  }.to_json
-end
-
 post '/create-checkout-session' do
-  content_type 'application/json'
-  data = JSON.parse(request.body.read)
-
   # Create new Checkout Session for the order
   # Other optional params include:
   # [billing_address_collection] - to display billing address details on the page
@@ -62,7 +59,7 @@ post '/create-checkout-session' do
       mode: 'subscription',
       line_items: [{
         quantity: 1,
-        price: data['priceId'],
+        price: params['priceId'],
       }],
     )
   rescue => e
@@ -71,9 +68,7 @@ post '/create-checkout-session' do
         { 'error': { message: e.error.message } }.to_json
   end
 
-  {
-    sessionId: session.id
-  }.to_json
+  redirect session.url, 303
 end
 
 post '/customer-portal' do

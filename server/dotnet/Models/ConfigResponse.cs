@@ -1,7 +1,6 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-public class SetupResponse
+public class ConfigResponse
 {
     [JsonProperty("publishableKey")]
     public string PublishableKey { get; set; }

@@ -13,7 +13,6 @@
   --accent-color: #0066f0;
   --body-font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   --radius: 6px;
-  --logo-image: url("https://storage.googleapis.com/stripe-sample-images/KAVHOLM.svg");
 }
 
 /* Base */
@@ -627,4 +626,8 @@ input[type="number"]::-webkit-outer-spin-button {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+button {
+  width: 100%;
 }
