@@ -25,15 +25,6 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class Server {
     private static Gson gson = new Gson();
 
-    static class CreateCheckoutSessionRequest {
-        @SerializedName("priceId")
-        String priceId;
-
-        public String getPriceId() {
-            return priceId;
-        }
-    }
-
     static class CreateCustomerPortalSessionRequest {
         @SerializedName("sessionId")
         String sessionId;
@@ -52,7 +43,7 @@ public class Server {
         // For sample support and debugging, not required for production:
         Stripe.setAppInfo(
             "stripe-samples/checkout-single-subscription",
-            "0.0.1",
+            "0.0.2",
             "https://github.com/stripe-samples/checkout-single-subscription"
         );
 
@@ -60,7 +51,7 @@ public class Server {
         staticFiles.externalLocation(
                 Paths.get(Paths.get("").toAbsolutePath().toString(), dotenv.get("STATIC_DIR")).normalize().toString());
 
-        get("/setup", (request, response) -> {
+        get("/config", (request, response) -> {
             response.type("application/json");
 
             Map<String, Object> responseData = new HashMap<>();
@@ -81,9 +72,6 @@ public class Server {
         });
 
         post("/create-checkout-session", (request, response) -> {
-            response.type("application/json");
-            CreateCheckoutSessionRequest req = gson.fromJson(request.body(), CreateCheckoutSessionRequest.class);
-
             String domainUrl = dotenv.get("DOMAIN");
 
             // Create new Checkout Session for the order
@@ -103,16 +91,15 @@ public class Server {
                 .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
                 .addLineItem(new SessionCreateParams.LineItem.Builder()
                   .setQuantity(1L)
-                  .setPrice(req.getPriceId())
+                  .setPrice(request.queryParams("priceId"))
                   .build()
                 )
                 .build();
 
             try {
                 Session session = Session.create(params);
-                Map<String, Object> responseData = new HashMap<>();
-                responseData.put("sessionId", session.getId());
-                return gson.toJson(responseData);
+                response.redirect(session.getUrl(), 303);
+                return "";
             } catch(Exception e) {
                 Map<String, Object> messageData = new HashMap<>();
                 messageData.put("message", e.getMessage());
