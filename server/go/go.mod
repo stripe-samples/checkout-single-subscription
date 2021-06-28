@@ -4,5 +4,5 @@ go 1.14
 
 require (
 	github.com/joho/godotenv v1.3.0
-	github.com/stripe/stripe-go/v72 v72.51.0
+	github.com/stripe/stripe-go/v72 v72.52.0
 )
