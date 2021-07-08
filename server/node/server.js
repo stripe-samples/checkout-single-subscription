@@ -92,20 +92,18 @@ app.post('/customer-portal', async (req, res) => {
   // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
   // Typically this is stored alongside the authenticated user in your database.
   const { sessionId } = req.body;
-  const checkoutsession = await stripe.checkout.sessions.retrieve(sessionId);
+  const checkoutSession = await stripe.checkout.sessions.retrieve(sessionId);
 
   // This is the url to which the customer will be redirected when they are done
   // managing their billing with the portal.
   const returnUrl = process.env.DOMAIN;
 
-  const portalsession = await stripe.billingPortal.sessions.create({
-    customer: checkoutsession.customer,
+  const portalSession = await stripe.billingPortal.sessions.create({
+    customer: checkoutSession.customer,
     return_url: returnUrl,
   });
 
-  res.send({
-    url: portalsession.url,
-  });
+  res.redirect(303, portalSession.url);
 });
 
 // Webhook handler for asynchronous events.

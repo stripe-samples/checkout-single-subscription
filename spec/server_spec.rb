@@ -87,8 +87,8 @@ RSpec.describe 'server APIs' do
       # but for testing we need to create a session with a customer attached
       session_with_customer = Stripe::Checkout::Session.create(
         customer: customer['id'],
-        success_url: ENV['DOMAIN'] + '/success.html?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url: ENV['DOMAIN'] + '/canceled.html',
+        success_url: "#{ENV['DOMAIN']}/success.html?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url: "#{ENV['DOMAIN']}/canceled.html",
         payment_method_types: ['card'],
         mode: 'subscription',
         line_items: [{
@@ -97,12 +97,23 @@ RSpec.describe 'server APIs' do
         }],
       )
 
-      # Create customer portal session
-      resp, status = post_json('/customer-portal', {
-        sessionId: session_with_customer['id'],
-      })
-      expect(status).to eq(200), resp.to_s
-      expect(resp).to have_key('url')
+      # With valid price
+      response = RestClient.post(
+        "#{SERVER_URL}/customer-portal",
+        {sessionId: session_with_customer.id},
+        {max_redirects: 0}
+      )
+      # RestClient will follow the redirect, but we can get the first response
+      # from the server from the `history`.
+      redirect_response = response.history.first
+
+      # Asserts the right HTTP status code for the redirect
+      expect(redirect_response.code).to eq(303)
+
+      # Pull's the Checkout session ID out of the Location header
+      # to assert the right configuration on the created session.
+      redirect_url = redirect_response.headers[:location]
+      expect(redirect_url).to start_with("https://billing.stripe.com/session")
     end
   end
 end

@@ -25,15 +25,6 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class Server {
     private static Gson gson = new Gson();
 
-    static class CreateCustomerPortalSessionRequest {
-        @SerializedName("sessionId")
-        String sessionId;
-
-        public String getSessionId() {
-            return sessionId;
-        }
-    }
-
     public static void main(String[] args) {
         port(4242);
 
@@ -111,22 +102,20 @@ public class Server {
         });
 
         post("/customer-portal", (request, response) -> {
-            response.type("application/json");
             // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
             // Typically this is stored alongside the authenticated user in your database.
-            CreateCustomerPortalSessionRequest req = gson.fromJson(request.body(), CreateCustomerPortalSessionRequest.class);
-            Session checkoutsession = Session.retrieve(req.getSessionId());
-            String customer = checkoutsession.getCustomer();
+            Session checkoutSession = Session.retrieve(request.queryParams("sessionId"));
+            String customer = checkoutSession.getCustomer();
             String domainUrl = dotenv.get("DOMAIN");
 
             com.stripe.param.billingportal.SessionCreateParams params = new com.stripe.param.billingportal.SessionCreateParams.Builder()
                 .setReturnUrl(domainUrl)
                 .setCustomer(customer)
                 .build();
-            com.stripe.model.billingportal.Session portalsession = com.stripe.model.billingportal.Session.create(params);
-            Map<String, Object> responseData = new HashMap<>();
-            responseData.put("url", portalsession.getUrl());
-            return gson.toJson(responseData);
+            com.stripe.model.billingportal.Session portalSession = com.stripe.model.billingportal.Session.create(params);
+
+            response.redirect(portalSession.getUrl(), 303);
+            return "";
         });
 
         post("/webhook", (request, response) -> {

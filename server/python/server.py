@@ -83,10 +83,9 @@ def create_checkout_session():
 
 @app.route('/customer-portal', methods=['POST'])
 def customer_portal():
-    data = json.loads(request.data)
     # For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
     # Typically this is stored alongside the authenticated user in your database.
-    checkout_session_id = data['sessionId']
+    checkout_session_id = request.form.get('sessionId')
     checkout_session = stripe.checkout.Session.retrieve(checkout_session_id)
 
     # This is the URL to which the customer will be redirected after they are
@@ -96,7 +95,7 @@ def customer_portal():
     session = stripe.billing_portal.Session.create(
         customer=checkout_session.customer,
         return_url=return_url)
-    return jsonify({'url': session.url})
+    return redirect(session.url, code=303)
 
 
 @app.route('/webhook', methods=['POST'])

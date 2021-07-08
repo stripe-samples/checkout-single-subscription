@@ -72,12 +72,9 @@ post '/create-checkout-session' do
 end
 
 post '/customer-portal' do
-  content_type 'application/json'
-  data = JSON.parse(request.body.read)
-
   # For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
   # Typically this is stored alongside the authenticated user in your database.
-  checkout_session_id = data['sessionId']
+  checkout_session_id = params['sessionId']
   checkout_session = Stripe::Checkout::Session.retrieve(checkout_session_id)
 
   # This is the URL to which users will be redirected after they are done
@@ -85,13 +82,11 @@ post '/customer-portal' do
   return_url = ENV['DOMAIN']
 
   session = Stripe::BillingPortal::Session.create({
-    customer: checkout_session['customer'],
+    customer: checkout_session.customer,
     return_url: return_url
   })
 
-  {
-    url: session.url
-  }.to_json
+  redirect session.url, 303
 end
 
 post '/webhook' do

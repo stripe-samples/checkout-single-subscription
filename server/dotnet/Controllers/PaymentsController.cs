@@ -81,13 +81,12 @@ namespace server.Controllers
         }
 
         [HttpPost("customer-portal")]
-        public async Task<IActionResult> CustomerPortal([FromBody] CustomerPortalRequest req)
+        public async Task<IActionResult> CustomerPortal(string sessionId)
         {
-            // For demonstration purposes, we're using the Checkout session to retrieve the customer ID. 
+            // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
             // Typically this is stored alongside the authenticated user in your database.
-            var checkoutSessionId = req.SessionId;
             var checkoutService = new SessionService(this.client);
-            var checkoutSession = await checkoutService.GetAsync(checkoutSessionId);
+            var checkoutSession = await checkoutService.GetAsync(sessionId);
 
             // This is the URL to which your customer will return after
             // they are done managing billing in the Customer Portal.
@@ -101,7 +100,8 @@ namespace server.Controllers
             var service = new Stripe.BillingPortal.SessionService(this.client);
             var session = await service.CreateAsync(options);
 
-            return Ok(session);
+            Response.Headers.Add("Location", session.Url);
+            return new StatusCodeResult(303);
         }
 
         [HttpPost("webhook")]

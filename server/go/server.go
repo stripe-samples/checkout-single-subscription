@@ -102,19 +102,11 @@ func handleCustomerPortal(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
 	}
-
-	var req struct {
-		SessionID string `json:"sessionId"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, nil, err)
-		log.Printf("json.NewDecoder.Decode: %v", err)
-		return
-	}
+  r.ParseForm()
+  sessionID := r.PostFormValue("sessionId")[0:]
 
 	// For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
 	// Typically this is stored alongside the authenticated user in your database.
-	sessionID := req.SessionID
 	s, err := session.Get(sessionID, nil)
 	if err != nil {
 		writeJSON(w, nil, err)
@@ -131,11 +123,7 @@ func handleCustomerPortal(w http.ResponseWriter, r *http.Request) {
 	}
 	ps, _ := portalsession.New(params)
 
-	writeJSON(w, struct {
-		URL string `json:"url"`
-	}{
-		URL: ps.URL,
-	}, nil)
+  http.Redirect(w, r, ps.URL, http.StatusSeeOther)
 }
 
 func handleWebhook(w http.ResponseWriter, r *http.Request) {
