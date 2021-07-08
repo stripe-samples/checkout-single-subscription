@@ -10,7 +10,6 @@ instructions in the directory on how to run.
 * [Go (net/http)](go/README.md)
 * [Java (Spark)](java/README.md)
 * [JavaScript (Node)](node/README.md)
-* [PHP (Slim)](php-slim/README.md)
 * [PHP](php/README.md)
 * [Python (Flask)](python/README.md)
 * [Ruby (Sinatra)](ruby/README.md)
