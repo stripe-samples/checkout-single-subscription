@@ -1,8 +1,25 @@
 <?php
 
-require_once 'shared.php';
+require '../vendor/autoload.php';
 
-$domain_url = $config['domain'];
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->load();
+
+// For sample support and debugging. Not required for production:
+\Stripe\Stripe::setAppInfo(
+  "stripe-samples/checkout-single-subscription",
+  "0.0.3",
+  "https://github.com/stripe-samples/checkout-single-subscription"
+);
+
+\Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
+
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+  echo 'Invalid request';
+  exit;
+}
+
+$domain_url = $_ENV['DOMAIN'];
 
 // Create new Checkout Session for the order
 // Other optional params include:
@@ -14,14 +31,15 @@ $domain_url = $config['domain'];
 
 // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
 $checkout_session = \Stripe\Checkout\Session::create([
-	'success_url' => $domain_url . '/success.html?session_id={CHECKOUT_SESSION_ID}',
-	'cancel_url' => $domain_url . '/canceled.html',
-	'payment_method_types' => ['card'],
-	'mode' => 'subscription',
-	'line_items' => [[
-	  'price' => $body->priceId,
-	  'quantity' => 1,
+  'success_url' => $domain_url . '/success.php?session_id={CHECKOUT_SESSION_ID}',
+  'cancel_url' => $domain_url . '/canceled.php',
+  'payment_method_types' => ['card'],
+  'mode' => 'subscription',
+  'line_items' => [[
+    'price' => $_POST['priceId'],
+    'quantity' => 1,
   ]]
 ]);
 
-echo json_encode(['sessionId' => $checkout_session['id']]);
+header("HTTP/1.1 303 See Other");
+header("Location: " . $checkout_session->url);

@@ -1,23 +1,29 @@
+<?php
+require '../vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->load();
+
+\Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
+
+// Fetch the Checkout Session to display the JSON result on the success page
+$checkout_session_id = $_GET['session_id'];
+$checkout_session = \Stripe\Checkout\Session::retrieve($checkout_session_id);
+
+// Format as JSON for the demo.
+$session_json = json_encode($checkout_session, JSON_PRETTY_PRINT);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Stripe Checkout Sample</title>
-    <meta name="description" content="A demo of Stripe Payment Intents" />
-
-    <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="css/normalize.css" />
     <link rel="stylesheet" href="css/global.css" />
-
-    <script src="./success.js" defer></script>
   </head>
-
   <body>
     <div class="sr-root">
       <div class="sr-main">
-        <header class="sr-header">
-          <div class="sr-header__logo"></div>
-        </header>
         <div class="sr-payment-summary completed-view">
             <h1>Your payment succeeded</h1>
             <h4>
@@ -26,12 +32,13 @@
           </div>
           <div class="sr-section completed-view">
             <div class="sr-callout">
-              <pre>
-
-              </pre>
+              <pre><?= $session_json ?></pre>
             </div>
             <button onclick="window.location.href = '/';">Restart demo</button>
-            <form id="manage-billing-form">
+            <form action="/customer-portal.php" method="POST">
+              <!-- This is only used for demonstration. In practice, you should use the customer related to the authenticated user. -->
+              <input type="hidden" name="sessionId" value="<?= $checkout_session_id ?>" />
+
               <button>Manage Billing</button>
             </form>
           </div>

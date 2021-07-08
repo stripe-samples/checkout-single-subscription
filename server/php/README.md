@@ -11,10 +11,10 @@
 composer install
 ```
 
-2. Copy config.ini.sample to .config.ini and replace with your Stripe API keys
+2. Copy .env.example from the root of the project to .env in the server directory and replace with your Stripe API keys and set a Basic and Pro price
 
 ```
-cp config.ini.sample config.ini
+cp .env.example server/php/.env
 ```
 
 3. Run the server locally

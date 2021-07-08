@@ -1,3 +1,23 @@
+<?php
+require '../vendor/autoload.php';
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->load();
+
+$basicPrice = $_ENV['BASIC_PRICE_ID'];
+if (!$basicPrice) {
+  http_response_code(500);
+  echo "You must set a Price ID in the .env file. Please see the README";
+  exit;
+}
+
+$proPrice = $_ENV['PRO_PRICE_ID'];
+if (!$proPrice) {
+  http_response_code(500);
+  echo "You must set a Price ID in the .env file. Please see the README";
+  exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,20 +30,15 @@
     <link rel="stylesheet" href="css/global.css" />
     <!-- Load Stripe.js on your website. -->
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="./script.js" defer></script>
   </head>
 
   <body>
     <div class="sr-root">
       <div class="sr-main" style="display: flex;">
-        <header class="sr-header">
-          <div class="sr-header__logo"></div>
-        </header>
         <div class="sr-container">
           <section class="container basic-photo">
             <div>
               <h1>Basic subscription</h1>
-              <h4>1 photo per week</h4>
               <div class="pasha-image">
                 <img
                   src="https://picsum.photos/280/320?random=4"
@@ -32,7 +47,10 @@
                 />
               </div>
             </div>
-            <button id="basic-plan-btn">$5.00 per week</button>
+            <form action="/create-checkout-session.php" method="POST">
+              <input type="hidden" name="priceId" value="<?= $basicPrice ?>" />
+              <button>$5.00</button>
+            </form>
           </section>
           <section class="container pro-photo">
             <div>
@@ -59,7 +77,10 @@
                 />
               </div>
             </div>
-            <button id="pro-plan-btn">$12.00 per week</button>
+            <form action="/create-checkout-session.php" method="POST">
+              <input type="hidden" name="priceId" value="<?= $proPrice ?>" />
+              <button>$12.00</button>
+            </form>
           </section>
         </div>
         <div id="error-message"></div>
