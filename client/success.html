@@ -16,9 +16,6 @@
     <div class="togethere-background"></div>
     <div class="sr-root">
       <div class="sr-main">
-        <header class="sr-header">
-          <div class="sr-header__logo"></div>
-        </header>
         <div class="sr-payment-summary completed-view">
             <h1>Your payment succeeded</h1>
             <h4>
@@ -31,7 +28,10 @@
             </pre>
             <button onclick="window.location.href = '/';">Restart demo</button>
 
-            <form id="manage-billing-form">
+            <form action="/customer-portal" method="POST">
+              <!-- In practice, use the Stripe customer ID on the server to redirect to the customer portal. This is for demo: -->
+              <input type="hidden" name="sessionId" id="sessionId" />
+
               <button>Manage Billing</button>
             </form>
           </div>

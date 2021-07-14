@@ -94,7 +94,8 @@ def customer_portal():
 
     session = stripe.billing_portal.Session.create(
         customer=checkout_session.customer,
-        return_url=return_url)
+        return_url=return_url,
+    )
     return redirect(session.url, code=303)
 
 
