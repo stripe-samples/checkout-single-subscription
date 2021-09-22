@@ -27,6 +27,7 @@ $domain_url = $_ENV['DOMAIN'];
 // [customer] - if you have an existing Stripe Customer ID
 // [payment_intent_data] - lets capture the payment later
 // [customer_email] - lets you prefill the email input in the form
+// [automatic_tax] - to automatically calculate sales tax, VAT and GST in the checkout page
 // For full details see https://stripe.com/docs/api/checkout/sessions/create
 
 // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
@@ -35,6 +36,7 @@ $checkout_session = \Stripe\Checkout\Session::create([
   'cancel_url' => $domain_url . '/canceled.php',
   'payment_method_types' => ['card'],
   'mode' => 'subscription',
+  // 'automatic_tax' => ['enabled' => true],
   'line_items' => [[
     'price' => $_POST['priceId'],
     'quantity' => 1,
