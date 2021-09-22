@@ -63,6 +63,7 @@ def create_checkout_session():
         # [billing_address_collection] - to display billing address details on the page
         # [customer] - if you have an existing Stripe Customer ID
         # [customer_email] - lets you prefill the email input in the form
+        # [automatic_tax] - to automatically calculate sales tax, VAT and GST in the checkout page
         # For full details see https://stripe.com/docs/api/checkout/sessions/create
 
         # ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
@@ -71,6 +72,7 @@ def create_checkout_session():
             cancel_url=domain_url + '/canceled.html',
             payment_method_types=['card'],
             mode='subscription',
+            # automatic_tax={'enabled': True},
             line_items=[{
                 'price': price,
                 'quantity': 1
