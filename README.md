@@ -96,6 +96,35 @@ stripe prices create \
   -d "recurring[interval]"=month
 ```
 
+<details>
+<summary>With Stripe Tax</summary>
+  Stripe Tax lets you calculate and collect sales tax, VAT and GST with one line of code.
+
+  Before creating a price, make sure you have Stripe Tax set up in the dashboard: [Docs - Set up Stripe Tax](https://stripe.com/docs/tax/set-up).
+
+  Stripe needs to know what kind of product you are selling to calculate the taxes. For this example we will submit a tax code describing what kind of product is used: `txcd_10000000` which is 'General - Electronically Supplied Services'. You can find a list of all tax codes here: [Available tax codes](https://stripe.com/docs/tax/tax-codes). If you leave the tax code empty, Stripe will use the default one from your [Tax settings](https://dashboard.stripe.com/test/settings/tax).
+
+  ```sh
+  stripe products create \
+    -d name="Premium" \
+    -d description="Premium plan" \
+    -d tax_code="txcd_10000000"
+  ```
+
+  From the response, copy the `id` and create a price. The tax behavior can be either `inclusive` or `exclusive`. For our example, we are using `exclusive`.
+
+  ```sh
+  stripe prices create \
+    -d unit_amount=1800 \
+    -d currency=usd \
+    -d tax_behavior=exclusive \
+    -d "recurring[interval]"=month \
+    -d product=<INSERT_ID, like prod_ABC123>
+  ```
+
+  More Information: [Docs - Update your Products and Prices](https://stripe.com/docs/tax/checkout#product-and-price-setup)
+</details>
+
 **Using the Dashboard**
 
 You can create Products and Prices [in the dashboard](https://dashboard.stripe.com/products). Create two recurring Prices to run this sample.
@@ -117,7 +146,8 @@ Pick the server language you want and follow the instructions in the server fold
 For example, if you want to run the Node server:
 
 ```
-cd server/node # there's a README in this folder with instructions
+cd server/node
+# There's a README in this folder with instructions to run the server and how to enable Stripe Tax.
 npm install
 npm start
 ```

@@ -51,6 +51,7 @@ namespace server.Controllers
                         Quantity = 1,
                     },
                 },
+                // AutomaticTax = new SessionAutomaticTaxOptions { Enabled = true },
             };
             var service = new SessionService(this.client);
             try
