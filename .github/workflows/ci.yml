@@ -4,6 +4,10 @@ on:
     branches:
       - master
 
+concurrency:
+  group: ci-${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-20.04
