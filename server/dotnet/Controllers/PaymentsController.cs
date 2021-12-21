@@ -38,10 +38,6 @@ namespace server.Controllers
             {
                 SuccessUrl = $"{this.options.Value.Domain}/success.html?session_id={{CHECKOUT_SESSION_ID}}",
                 CancelUrl = $"{this.options.Value.Domain}/canceled.html",
-                PaymentMethodTypes = new List<string>
-                {
-                    "card",
-                },
                 Mode = "subscription",
                 LineItems = new List<SessionLineItemOptions>
                 {

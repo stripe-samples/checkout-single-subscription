@@ -66,7 +66,6 @@ RSpec.describe 'server APIs' do
       session_with_customer = Stripe::Checkout::Session.create(
         success_url: ENV['DOMAIN'] + '/success.html?session_id={CHECKOUT_SESSION_ID}',
         cancel_url: ENV['DOMAIN'] + '/canceled.html',
-        payment_method_types: ['card'],
         mode: 'subscription',
         line_items: [{
           quantity: 7,
@@ -89,7 +88,6 @@ RSpec.describe 'server APIs' do
         customer: customer['id'],
         success_url: "#{ENV['DOMAIN']}/success.html?session_id={CHECKOUT_SESSION_ID}",
         cancel_url: "#{ENV['DOMAIN']}/canceled.html",
-        payment_method_types: ['card'],
         mode: 'subscription',
         line_items: [{
           quantity: 1,

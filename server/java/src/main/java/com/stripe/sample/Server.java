@@ -79,7 +79,6 @@ public class Server {
             SessionCreateParams params = new SessionCreateParams.Builder()
                 .setSuccessUrl(domainUrl + "/success.html?session_id={CHECKOUT_SESSION_ID}")
                 .setCancelUrl(domainUrl + "/canceled.html")
-                .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
                 .addLineItem(new SessionCreateParams.LineItem.Builder()
                   .setQuantity(1L)

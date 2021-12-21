@@ -56,7 +56,6 @@ post '/create-checkout-session' do
     session = Stripe::Checkout::Session.create(
       success_url: ENV['DOMAIN'] + '/success.html?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: ENV['DOMAIN'] + '/canceled.html',
-      payment_method_types: ['card'],
       mode: 'subscription',
       # automatic_tax: { enabled: true },
       line_items: [{
