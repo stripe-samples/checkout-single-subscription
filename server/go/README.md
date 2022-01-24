@@ -33,9 +33,15 @@ STRIPE_SECRET_KEY=sk_test...
 # Required to verify signatures in the webhook handler.
 # See README on how to use the Stripe CLI to test webhooks
 STRIPE_WEBHOOK_SECRET=whsec_...
+
+DOMAIN=http://localhost:4242
+# Price ID for a recurring price
+BASIC_PRICE_ID=price_xyz987...
+# Price ID for a second recurring price
+PRO_PRICE_ID=price_abc123...
+
 # Path to front-end implementation. Note: PHP has it's own front end implementation.
 STATIC_DIR=../../client/html
-DOMAIN=http://localhost:4242
 ```
 
 2. Install dependencies
@@ -54,3 +60,5 @@ Again from the server directory run:
 ```sh
 go run server.go
 ```
+
+View in browser: [localhost:4242](http://localhost:4242)
