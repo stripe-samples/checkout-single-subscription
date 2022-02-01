@@ -43,38 +43,38 @@ Follow the steps below to run locally.
 
 The Stripe CLI is the fastest way to clone and configure a sample to run locally.
 
-**Using the Stripe CLI**
+***Cloning using the Stripe CLI***
 
-If you haven't already installed the CLI, follow the [installation steps](https://stripe.com/docs/stripe-cli#install) in the project README. The CLI is useful for cloning samples and locally testing webhooks and Stripe integrations.
+> If you haven't already installed the CLI, follow the [installation steps](https://stripe.com/docs/stripe-cli#install) in the project README. The CLI is useful for cloning samples and locally testing webhooks and Stripe integrations.
+> 
+> In your terminal shell, run the Stripe CLI command to clone the sample:
+> 
+> ```sh
+> ./stripe samples create checkout-single-subscription
+> ```
+> 
+> The CLI will walk you through picking your server and client languages and configuring your `.env` config file with your Stripe API keys.
 
-In your terminal shell, run the Stripe CLI command to clone the sample:
+***Cloning manually***
 
-```
-stripe samples create checkout-single-subscription
-```
-
-The CLI will walk you through picking your server and client languages and configuring your `.env` config file with your Stripe API keys.
-
-**Installing and cloning manually**
-
-If you do not want to use the Stripe CLI, you can manually clone and configure the sample yourself:
-
-```
-git clone https://github.com/stripe-samples/checkout-single-subscription
-```
-
-Copy the `.env.example` file into a file named `.env` in the folder of the server you want to use. For example:
-
-```
-cp .env.example server/node/.env
-```
-
-You will need a Stripe account in order to run the demo. Once you set up your account, go to the Stripe [developer dashboard](https://stripe.com/docs/development/quickstart#api-keys) to find your API keys.
-
-```
-STRIPE_PUBLISHABLE_KEY=<replace-with-your-publishable-key>
-STRIPE_SECRET_KEY=<replace-with-your-secret-key>
-```
+> If you do not want to use the Stripe CLI, you can manually clone and configure the sample yourself:
+> 
+> ```sh
+> git clone https://github.com/stripe-samples/checkout-single-subscription
+> ```
+> 
+> Copy the `.env.example` file into a file named `.env` in the folder of the server you want to use. For example:
+> 
+> ```sh
+> cp .env.example server/node/.env
+> ```
+> 
+> You will need a Stripe account in order to run the demo. Once you set up your account, go to the Stripe [developer dashboard](https://stripe.com/docs/development/quickstart#api-keys) to find your API keys.
+> 
+> ```sh
+> STRIPE_PUBLISHABLE_KEY=<replace-with-your-publishable-key>
+> STRIPE_SECRET_KEY=<replace-with-your-secret-key>
+> ```
 
 **2. Create Products and Prices on Stripe**
 
@@ -82,18 +82,39 @@ This sample requires two [Price](https://stripe.com/docs/api/prices/object) IDs 
 
 **Using the Stripe CLI**
 
-```
-stripe products create --name="Premium" --description="Premium plan"
+Create basic product
+```sh
+./stripe products create --name="Basic" --description="Basic plan"
 ```
 
-Create the price for the premium product, passing the product ID from the response:
-
+Create premium product
+```sh
+./stripe products create --name="Premium" --description="Premium plan"
 ```
-stripe prices create \
-  -d product=prod_XYZ \
-  -d unit_amount=1800 \
-  -d currency=usd \
-  -d "recurring[interval]"=month
+
+Take note of the id value for the products you just created as you will need this to create prices. For example:
+```json
+{
+  "id": "price_RANDOM_ID_VALUE"
+}
+```
+
+Create price for Basic product, substituting `ID_OF_BASIC_PRODUCT` with the appropriate product Id:
+```sh
+./stripe prices create
+  -d "product=ID_OF_BASIC_PRODUCT"
+  -d "unit_amount=1800"
+  -d "currency=usd"
+  -d "recurring[interval]=month"
+```
+
+Create price for Premium product, substituting `ID_OF_BASIC_PRODUCT` with the appropriate product Id:
+```sh
+./stripe prices create
+  -d "product=ID_OF_PREMIUM_PRODUCT"
+  -d "unit_amount=1800"
+  -d "currency=usd"
+  -d "recurring[interval]=month"
 ```
 
 <details>
@@ -105,21 +126,21 @@ stripe prices create \
   Stripe needs to know what kind of product you are selling to calculate the taxes. For this example we will submit a tax code describing what kind of product is used: `txcd_10000000` which is 'General - Electronically Supplied Services'. You can find a list of all tax codes here: [Available tax codes](https://stripe.com/docs/tax/tax-codes). If you leave the tax code empty, Stripe will use the default one from your [Tax settings](https://dashboard.stripe.com/test/settings/tax).
 
   ```sh
-  stripe products create \
-    -d name="Premium" \
-    -d description="Premium plan" \
-    -d tax_code="txcd_10000000"
+  ./stripe products create
+    -d "name=Premium"
+    -d "description=Premium plan"
+    -d "tax_code=txcd_10000000"
   ```
 
   From the response, copy the `id` and create a price. The tax behavior can be either `inclusive` or `exclusive`. For our example, we are using `exclusive`.
 
   ```sh
-  stripe prices create \
-    -d unit_amount=1800 \
-    -d currency=usd \
-    -d tax_behavior=exclusive \
-    -d "recurring[interval]"=month \
-    -d product=<INSERT_ID, like prod_ABC123>
+  ./stripe prices create
+    -d "unit_amount=1800"
+    -d "currency=usd"
+    -d "tax_behavior=exclusive"
+    -d "recurring[interval]=month"
+    -d "product=<INSERT_ID, like prod_ABC123>"
   ```
 
   More Information: [Docs - Update your Products and Prices](https://stripe.com/docs/tax/checkout#product-and-price-setup)
@@ -145,7 +166,7 @@ Pick the server language you want and follow the instructions in the server fold
 
 For example, if you want to run the Node server:
 
-```
+```sh
 cd server/node
 # There's a README in this folder with instructions to run the server and how to enable Stripe Tax.
 npm install
@@ -162,8 +183,8 @@ You can use the Stripe CLI to easily spin up a local webhook.
 
 First [install the CLI](https://stripe.com/docs/stripe-cli) and [link your Stripe account](https://stripe.com/docs/stripe-cli#link-account).
 
-```
-stripe listen --forward-to localhost:4242/webhook
+```sh
+./stripe listen --forward-to "localhost:4242/webhook"
 ```
 
 The CLI will print a webhook secret key to the console. Set `STRIPE_WEBHOOK_SECRET` to this value in your `.env` file.
@@ -183,12 +204,12 @@ The other environment variables are configurable:
 ## FAQ
 
 Q: Why did you pick these frameworks?
-
-A: We chose the most minimal framework to convey the key Stripe calls and concepts you need to understand. These demos are meant as an educational tool that helps you roadmap how to integrate Stripe within your own system independent of the framework.
-
+ 
+> We chose the most minimal framework to convey the key Stripe calls and concepts you need to understand. These demos are meant as an educational tool that helps you roadmap how to integrate Stripe within your own system independent of the framework.
+ 
 Q: What happened to Plans and SKUs?
 
-A: Plans and SKUs were old ways to model recurring and one-off prices. We created the Prices API to unify the two concepts and make it easier to reason about your pricing catalog. You can still pass old Plan and SKU IDs to Checkout -- to learn more read [our docs](https://stripe.com/docs/payments/checkout/migrating-prices) but know that you do not need to migrate any of your existing SKUs and Plans.
+> Plans and SKUs were old ways to model recurring and one-off prices. We created the Prices API to unify the two concepts and make it easier to reason about your pricing catalog. You can still pass old Plan and SKU IDs to Checkout -- to learn more read [our docs](https://stripe.com/docs/payments/checkout/migrating-prices) but know that you do not need to migrate any of your existing SKUs and Plans.
 
 ## Get support
 If you found a bug or want to suggest a new [feature/use case/sample], please [file an issue](../../issues).
