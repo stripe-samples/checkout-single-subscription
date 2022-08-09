@@ -2,7 +2,14 @@ name: CI for stripe-samples/checkout-single-subscription
 on:
   push:
     branches:
-      - master
+      - fix-ci
+      - main
+
+env:
+  STRIPE_PUBLISHABLE_KEY: ${{ secrets.TEST_STRIPE_PUBLISHABLE_KEY }}
+  STRIPE_SECRET_KEY: ${{ secrets.TEST_STRIPE_SECRET_KEY }}
+  PREMIUM: ${{ secrets.TEST_PREMIUM_PRICE }}
+  BASIC: ${{ secrets.TEST_BASIC_PRICE }}
 
 concurrency:
   group: ci-${{ github.head_ref }}
@@ -11,6 +18,32 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime:
+          - server_type: ruby
+            server_image: ruby:latest
+          - server_type: ruby
+            server_image: ruby:2.7
+          - server_type: node
+            server_image: node:latest
+          - server_type: node
+            server_image: node:lts
+          - server_type: python
+            server_image: python:latest
+          - server_type: python
+            server_image: python:3.7
+          - server_type: java
+            server_image: maven:latest
+          - server_type: java
+            server_image: maven:3.8-openjdk-8
+          - server_type: go
+            server_image: golang:latest
+          - server_type: go
+            server_image: golang:1.17
+          - server_type: dotnet
+            server_image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
       - uses: actions/checkout@v2
 
@@ -37,23 +70,14 @@ jobs:
           PRO_PRICE_ID=${PREMIUM}
           EOF
 
-          for lang in $(cat .cli.json | server_langs_for_integration main)
-          do
-            [ "$lang" = "php" ] && continue
-
-            configure_docker_compose_for_integration . "$lang" ../../client
-            docker-compose up -d && wait_web_server
-            docker-compose exec -T runner bundle exec rspec spec/server_spec.rb
-          done
-        env:
-          STRIPE_PUBLISHABLE_KEY: ${{ secrets.TEST_STRIPE_PUBLISHABLE_KEY }}
-          STRIPE_SECRET_KEY: ${{ secrets.TEST_STRIPE_SECRET_KEY }}
-          PREMIUM: ${{ secrets.TEST_PREMIUM_PRICE }}
-          BASIC: ${{ secrets.TEST_BASIC_PRICE }}
+          configure_docker_compose_for_integration . "${{ matrix.runtime.server_type }}" ../../client "${{ matrix.runtime.server_image }}"
+          docker-compose up -d && wait_web_server
+          docker-compose exec -T runner bundle exec rspec spec/server_spec.rb
 
       - name: Collect debug information
         if: ${{ failure() }}
         run: |
+          cat .env
           cat docker-compose.yml
           docker-compose ps -a
           docker-compose logs web
