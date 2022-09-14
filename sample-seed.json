@@ -1,0 +1,96 @@
+{
+  "_meta": {
+    "template_version": 0
+  },
+  "fixtures": [
+    {
+      "name": "starter_product",
+      "path": "/v1/products",
+      "method": "post",
+      "params": {
+        "name": "Starter",
+        "description": "The essentials for when you're just getting started.",
+        "metadata": {
+          "features": "[\"2 projects\", \"Up to 1,000 apps\", \"Basic analytics\", \"E-mail support\"]"
+        }
+      }
+    },
+    {
+      "name": "starter_monthly_price",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "currency": "usd",
+        "product": "${starter_product:id}",
+        "unit_amount": 1200,
+        "recurring": {
+          "interval": "month"
+        },
+        "lookup_key": "starter",
+        "transfer_lookup_key": true,
+        "tax_behavior": "exclusive"
+      }
+    },
+    {
+      "name": "starter_annual_price",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "currency": "usd",
+        "product": "${starter_product:id}",
+        "unit_amount": 12000,
+        "recurring": {
+          "interval": "year"
+        },
+        "tax_behavior": "exclusive",
+        "lookup_key": "starter_annual",
+        "transfer_lookup_key": true
+      }
+    },
+    {
+      "name": "pro_product",
+      "path": "/v1/products",
+      "method": "post",
+      "params": {
+        "name": "Professional",
+        "description": "For professionals looking to achieve maximum efficiency and time savings.",
+        "metadata": {
+          "features": "[\"10 projects\", \"Up to 10,000 apps\", \"Advanced analytics\", \"24-hour chat support\", \"Channel management\"]",
+          "most_popular": true
+        }
+      }
+    },
+    {
+      "name": "pro_monthly_price",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "currency": "usd",
+        "product": "${pro_product:id}",
+        "unit_amount": 1800,
+        "recurring": {
+          "interval": "month"
+        },
+        "lookup_key": "pro",
+        "transfer_lookup_key": true,
+        "tax_behavior": "exclusive"
+      }
+    },
+    {
+      "name": "pro_annual_price",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "currency": "usd",
+        "product": "${pro_product:id}",
+        "unit_amount": 18000,
+        "recurring": {
+          "interval": "year"
+        },
+        "tax_behavior": "exclusive",
+        "lookup_key": "pro_annual",
+        "transfer_lookup_key": true
+      }
+    }
+  ]
+}
