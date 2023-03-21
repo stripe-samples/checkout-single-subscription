@@ -95,7 +95,7 @@ Create premium product
 Take note of the id value for the products you just created as you will need this to create prices. For example:
 ```json
 {
-  "id": "price_RANDOM_ID_VALUE"
+  "id": "prod_RANDOM_ID_VALUE"
 }
 ```
 
