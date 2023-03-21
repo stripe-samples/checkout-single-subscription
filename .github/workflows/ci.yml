@@ -33,7 +33,7 @@ jobs:
           - server_type: python
             server_image: python:latest
           - server_type: python
-            server_image: python:3.7
+            server_image: python:3.8
           - server_type: java
             server_image: maven:latest
           - server_type: java
