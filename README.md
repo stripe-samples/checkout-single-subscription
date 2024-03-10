@@ -101,19 +101,19 @@ Take note of the id value for the products you just created as you will need thi
 
 Create price for Basic product, substituting `ID_OF_BASIC_PRODUCT` with the appropriate product Id:
 ```sh
-./stripe prices create
-  -d "product=ID_OF_BASIC_PRODUCT"
-  -d "unit_amount=1800"
-  -d "currency=usd"
+./stripe prices create \
+  -d "product=ID_OF_BASIC_PRODUCT" \
+  -d "unit_amount=1800" \
+  -d "currency=usd" \
   -d "recurring[interval]=month"
 ```
 
 Create price for Premium product, substituting `ID_OF_BASIC_PRODUCT` with the appropriate product Id:
 ```sh
-./stripe prices create
-  -d "product=ID_OF_PREMIUM_PRODUCT"
-  -d "unit_amount=1800"
-  -d "currency=usd"
+./stripe prices create \
+  -d "product=ID_OF_PREMIUM_PRODUCT" \
+  -d "unit_amount=1800" \
+  -d "currency=usd" \
   -d "recurring[interval]=month"
 ```
 
@@ -126,20 +126,20 @@ Create price for Premium product, substituting `ID_OF_BASIC_PRODUCT` with the ap
   Stripe needs to know what kind of product you are selling to calculate the taxes. For this example we will submit a tax code describing what kind of product is used: `txcd_10000000` which is 'General - Electronically Supplied Services'. You can find a list of all tax codes here: [Available tax codes](https://stripe.com/docs/tax/tax-codes). If you leave the tax code empty, Stripe will use the default one from your [Tax settings](https://dashboard.stripe.com/test/settings/tax).
 
   ```sh
-  ./stripe products create
-    -d "name=Premium"
-    -d "description=Premium plan"
+  ./stripe products create \
+    -d "name=Premium" \
+    -d "description=Premium plan" \
     -d "tax_code=txcd_10000000"
   ```
 
   From the response, copy the `id` and create a price. The tax behavior can be either `inclusive` or `exclusive`. For our example, we are using `exclusive`.
 
   ```sh
-  ./stripe prices create
-    -d "unit_amount=1800"
-    -d "currency=usd"
-    -d "tax_behavior=exclusive"
-    -d "recurring[interval]=month"
+  ./stripe prices create \
+    -d "unit_amount=1800" \
+    -d "currency=usd" \
+    -d "tax_behavior=exclusive" \
+    -d "recurring[interval]=month" \
     -d "product=<INSERT_ID, like prod_ABC123>"
   ```
 
