@@ -4,20 +4,60 @@ on:
     branches:
       - fix-ci
       - main
+  pull_request_target:
 
 env:
   STRIPE_PUBLISHABLE_KEY: ${{ secrets.TEST_STRIPE_PUBLISHABLE_KEY }}
   STRIPE_SECRET_KEY: ${{ secrets.TEST_STRIPE_SECRET_KEY }}
   PREMIUM: ${{ secrets.TEST_PREMIUM_PRICE }}
   BASIC: ${{ secrets.TEST_BASIC_PRICE }}
+  MAINTAINERS: |
+    cecilphillip-stripe
+    charliegerard-stripe
+    dependabot[bot]
+    erinkavanaugh-stripe
+    hideokamoto-stripe
+    kevinpeters-stripe
 
 concurrency:
-  group: ci-${{ github.head_ref }}
+  group: ci-${{ github.event.pull_request.head.ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
+  require-permission:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'check if the triggering actor is one of the maintainers'
+        run: |
+          while read item; do
+            if [[ "$item" == "${{ github.triggering_actor }}" ]]; then
+              exit # safe to run tests with write permission
+            fi
+          done <<< "$MAINTAINERS"
+          echo 'CI have to be re-run by one of the $MAINTAINERS' >> $GITHUB_STEP_SUMMARY
+          exit 1
+
+  changed_files:
+    runs-on: ubuntu-latest
+    needs: require-permission
+    outputs:
+      files: ${{ steps.diff.outputs.files }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.after || github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: 'Collect changed files'
+        id: diff
+        run: |
+          echo 'files<<EOF' >> $GITHUB_OUTPUT
+          git diff --name-only --merge-base origin/main >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+
   test:
-    runs-on: ubuntu-20.04
+    needs: changed_files
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -45,22 +85,30 @@ jobs:
           - server_type: dotnet
             server_image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
-      - uses: actions/checkout@v3
+      - id: if_running
+        run: |
+          prefix="${{ matrix.target.sample }}/server/${{ matrix.runtime.server_type }}"
+          if [[ "${{ github.event.pull_request.head.ref || github.ref }}" = "refs/heads/main" ]] || \
+            [[ $(echo "${{ needs.changed_files.outputs.files }}" | grep -E "^${prefix}") ]]
+          then echo 'running=true' >> $GITHUB_OUTPUT
+          fi
+      - uses: actions/checkout@v4
+        if: ${{ steps.if_running.outputs.running }}
+        with:
+          ref: ${{ github.event.after || github.event.pull_request.head.sha }}
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        if: ${{ steps.if_running.outputs.running }}
         with:
           repository: 'stripe-samples/sample-ci'
           path: 'sample-ci'
 
-      - name: Setup dependencies
+      - name: Run tests
+        if: ${{ steps.if_running.outputs.running }}
         run: |
           source sample-ci/helpers.sh
 
           setup_dependencies
-
-      - name: Run tests
-        run: |
-          source sample-ci/helpers.sh
 
           install_docker_compose_settings
           export STRIPE_WEBHOOK_SECRET=$(retrieve_webhook_secret)
@@ -81,3 +129,29 @@ jobs:
           cat docker-compose.yml
           docker-compose ps -a
           docker-compose logs web
+
+  auto-merge-dependabot-prs:
+    if: ${{ github.event.pull_request && github.actor == 'dependabot[bot]' }}
+    needs:
+      - test
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1.1.1
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+      - name: Enable auto-merge for Stripe SDKs
+        if: |
+          (contains(steps.metadata.outputs.dependency-names, 'github.com/stripe/stripe-go/v72') ||
+           contains(steps.metadata.outputs.dependency-names, 'Stripe.net') ||
+           contains(steps.metadata.outputs.dependency-names, 'com.stripe:stripe-java') ||
+           contains(steps.metadata.outputs.dependency-names, 'stripe/stripe-php') ||
+           contains(steps.metadata.outputs.dependency-names, 'stripe'))
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
