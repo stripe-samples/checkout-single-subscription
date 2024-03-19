@@ -1,30 +1,50 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.FileProviders;
+using Stripe;
 
-namespace server
+DotNetEnv.Env.Load();
+
+StripeConfiguration.AppInfo = new AppInfo
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+    Name = "stripe-samples/checkout-single-subscription",
+    Url = "https://github.com/stripe-samples/checkout-single-subscription",
+    Version = "0.0.1",
+};
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            DotNetEnv.Env.Load();
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                    webBuilder.UseWebRoot(Environment.GetEnvironmentVariable("STATIC_DIR"));
-                });
-        }   
-    }
+StripeConfiguration.ApiKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.Configure<StripeOptions>(options =>
+{
+    options.PublishableKey = Environment.GetEnvironmentVariable("STRIPE_PUBLISHABLE_KEY");
+    options.SecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
+    options.WebhookSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_SECRET");
+    options.BasicPrice = Environment.GetEnvironmentVariable("BASIC_PRICE_ID");
+    options.ProPrice = Environment.GetEnvironmentVariable("PRO_PRICE_ID");
+    options.Domain = Environment.GetEnvironmentVariable("DOMAIN");
+});
+
+builder.Services.AddControllers();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
 }
+
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(),
+        Environment.GetEnvironmentVariable("STATIC_DIR"))
+    ),
+    RequestPath = new PathString("")
+});
+
+app.UseRouting();
+
+app.MapGet("/", () => Results.Redirect("index.html"));
+
+app.MapControllers();
+
+app.Run();
