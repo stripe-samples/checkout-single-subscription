@@ -2,7 +2,7 @@
 An [Express server](http://expressjs.com) implementation
 
 ## Requirements
-* Node v10+
+* Node v20+
 * [Configured .env file](../README.md)
 
 ## How to run
