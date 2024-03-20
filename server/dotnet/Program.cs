@@ -23,7 +23,7 @@ builder.Services.Configure<StripeOptions>(options =>
     options.Domain = Environment.GetEnvironmentVariable("DOMAIN");
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
 
 var app = builder.Build();
 
