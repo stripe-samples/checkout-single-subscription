@@ -17,6 +17,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "thursday"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # python dependencies
   - package-ecosystem: "pip"
@@ -24,6 +27,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "thursday"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # php dependencies
   - package-ecosystem: "composer"
@@ -31,6 +37,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "thursday"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # node dependencies
   - package-ecosystem: "npm"
@@ -38,6 +47,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "thursday"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # go dependencies
   - package-ecosystem: "gomod"
@@ -45,6 +57,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "thursday"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # java dependencies
   - package-ecosystem: "maven"
@@ -52,6 +67,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "thursday"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # dotnet dependencies
   - package-ecosystem: "nuget"
@@ -61,3 +79,5 @@ updates:
       day: "thursday"
     ignore:
       - dependency-name: "Microsoft.AspNetCore.Mvc.NewtonsoftJson"
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
