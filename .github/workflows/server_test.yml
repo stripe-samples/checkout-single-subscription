@@ -43,7 +43,7 @@ jobs:
           PREMIUM=${PREMIUM_PRICE}
           EOF
 
-          configure_docker_compose_for_integration . "${{ inputs.server_type }}" ../../client/html "${{ inputs.server_image }}"
+          configure_docker_compose_for_integration . "${{ inputs.server_type }}" ../../client "${{ inputs.server_image }}"
 
           docker-compose up -d && wait_web_server
           docker-compose exec -T runner bundle exec rspec spec/server_spec.rb
