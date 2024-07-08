@@ -39,8 +39,8 @@ jobs:
           export STRIPE_WEBHOOK_SECRET=$(retrieve_webhook_secret)
           cat <<EOF >> .env
           DOMAIN=http://web:4242
-          BASIC=${BASIC_PRICE}
-          PREMIUM=${PREMIUM_PRICE}
+          BASIC_PRICE_ID=${BASIC_PRICE}
+          PRO_PRICE_ID=${PREMIUM_PRICE}
           EOF
 
           configure_docker_compose_for_integration . "${{ inputs.server_type }}" ../../client "${{ inputs.server_image }}"
