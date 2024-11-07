@@ -8,6 +8,6 @@
   <ItemGroup>    
     <PackageReference Include="DotNetEnv" Version="3.0.0" />    
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.3" />
-    <PackageReference Include="Stripe.net" Version="44.8.0" />
+    <PackageReference Include="Stripe.net" Version="47.0.0" />
   </ItemGroup>
 </Project>
