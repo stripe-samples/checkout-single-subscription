@@ -11,10 +11,10 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/stripe/stripe-go/v72"
-	portalsession "github.com/stripe/stripe-go/v72/billingportal/session"
-	"github.com/stripe/stripe-go/v72/checkout/session"
-	"github.com/stripe/stripe-go/v72/webhook"
+	"github.com/stripe/stripe-go/v84"
+	portalsession "github.com/stripe/stripe-go/v84/billingportal/session"
+	"github.com/stripe/stripe-go/v84/checkout/session"
+	"github.com/stripe/stripe-go/v84/webhook"
 )
 
 func main() {
