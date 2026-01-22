@@ -33,3 +33,7 @@ target/
 .classpath
 .factorypath
 .project
+
+# Terraform files
+.terraform*
+terraform.tfstate*
